@@ -1,5 +1,6 @@
 import { UnitConverter } from "@/components/distance/unit-converter";
 import { DistanceScale } from "@/components/distance/distance-scale";
+import { DistanceSets } from "@/components/distance/distance-sets";
 
 export default function DistancePage() {
   return (
@@ -10,6 +11,8 @@ export default function DistancePage() {
           Understanding the vast scales of the universe.
         </p>
       </div>
+
+      <DistanceSets />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <UnitConverter />
