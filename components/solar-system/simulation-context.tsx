@@ -50,6 +50,10 @@ interface SimulationContextType {
   setShowPluto: (showPluto: boolean) => void
   showMoon: boolean
   setShowMoon: (showMoon: boolean) => void
+  showStars: boolean
+  setShowStars: (showStars: boolean) => void
+  showControlsPanel: boolean
+  setShowControlsPanel: (showControlsPanel: boolean) => void
   labelPositions: Record<string, LabelInfo>
   setLabelPosition: (info: LabelInfo) => void
 }
@@ -71,6 +75,8 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const [showAsteroids, setShowAsteroids] = useState(true)
   const [showPluto, setShowPluto] = useState(true)
   const [showMoon, setShowMoon] = useState(true)
+  const [showStars, setShowStars] = useState(true)
+  const [showControlsPanel, setShowControlsPanel] = useState(true)
   const labelPositionsRef = React.useRef<Record<string, LabelInfo>>({})
   const [labelPositions, setLabelPositions] = useState<Record<string, LabelInfo>>({})
   
@@ -106,6 +112,10 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
         setShowPluto,
         showMoon,
         setShowMoon,
+        showStars,
+        setShowStars,
+        showControlsPanel,
+        setShowControlsPanel,
         labelPositions,
         setLabelPosition: (info) => {
           labelPositionsRef.current = { ...labelPositionsRef.current, [info.name]: info }

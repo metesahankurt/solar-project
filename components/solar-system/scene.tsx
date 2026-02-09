@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Play, Pause } from "lucide-react"
+import { EyeOff, Play, Pause } from "lucide-react"
 import { PlanetDetailsPanel } from "./planet-details-panel"
 import { PlanetTooltip } from "./planet-tooltip"
 import { PlanetLabelLayer } from "./label-layer"
@@ -39,20 +39,47 @@ function SimulationControls() {
     setShowPluto,
     showMoon,
     setShowMoon,
+    showStars,
+    setShowStars,
+    showControlsPanel,
+    setShowControlsPanel,
   } = useSimulation()
+
+  if (!showControlsPanel) {
+    return (
+      <Button
+        variant="secondary"
+        size="sm"
+        className="absolute bottom-4 left-4 z-20"
+        onClick={() => setShowControlsPanel(true)}
+      >
+        Show Controls
+      </Button>
+    )
+  }
 
   return (
     <Card className="absolute bottom-4 left-4 w-72 max-w-[calc(100vw-2rem)] bg-background/90 text-foreground shadow-sm backdrop-blur">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 gap-2">
         <CardTitle className="text-sm">Simulation Controls</CardTitle>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsPaused(!isPaused)}
-          className="h-8 w-8"
-        >
-          {isPaused ? <Play className="size-4" /> : <Pause className="size-4" />}
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsPaused(!isPaused)}
+            className="h-8 w-8"
+          >
+            {isPaused ? <Play className="size-4" /> : <Pause className="size-4" />}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setShowControlsPanel(false)}
+          >
+            <EyeOff className="size-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-3 text-xs">
         <div className="flex items-center justify-between">
@@ -91,6 +118,10 @@ function SimulationControls() {
             <Switch checked={showAsteroids} onCheckedChange={setShowAsteroids} />
           </div>
           <div className="flex items-center justify-between">
+            <Label className="text-xs">Stars</Label>
+            <Switch checked={showStars} onCheckedChange={setShowStars} />
+          </div>
+          <div className="flex items-center justify-between">
             <Label className="text-xs">Show Pluto</Label>
             <Switch checked={showPluto} onCheckedChange={setShowPluto} />
           </div>
@@ -121,7 +152,7 @@ function SimulationClock() {
 }
 
 function SceneBodies() {
-  const { showPluto, showMoon } = useSimulation()
+  const { showPluto, showMoon, showStars } = useSimulation()
   const pluto = dwarfPlanets[0]
 
   return (
@@ -133,6 +164,9 @@ function SceneBodies() {
       {showPluto && pluto && <Planet key={pluto.name} planet={pluto} />}
       {showMoon && <Moon />}
       <AsteroidBelt />
+      {showStars && (
+        <Stars radius={4000} depth={400} count={10000} factor={4} saturation={0} fade speed={1} />
+      )}
     </>
   )
 }
@@ -151,7 +185,6 @@ export function SolarSystemScene() {
             <color attach="background" args={["#05070c"]} />
             <fog attach="fog" args={["#05070c", 800, 7000]} />
             <ambientLight intensity={0.2} />
-            <Stars radius={4000} depth={400} count={10000} factor={4} saturation={0} fade speed={1} />
             <mesh>
               <sphereGeometry args={[6000, 32, 32]} />
               <meshBasicMaterial color="#05070c" side={THREE.BackSide} />
