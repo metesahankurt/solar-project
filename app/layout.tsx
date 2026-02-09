@@ -4,8 +4,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { NavTrigger } from "@/components/nav-trigger";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,12 +42,14 @@ export default function RootLayout({
           <TooltipProvider>
             <SidebarProvider>
               <AppSidebar />
-              <main className="w-full">
-                <div className="p-4">
-                  <SidebarTrigger />
-                  {children}
-                </div>
-              </main>
+              <SidebarInset>
+                <main className="relative w-full h-full flex flex-col overflow-hidden">
+                  <NavTrigger />
+                  <div className="flex-1 overflow-auto">
+                    {children}
+                  </div>
+                </main>
+              </SidebarInset>
               <Toaster />
             </SidebarProvider>
           </TooltipProvider>
