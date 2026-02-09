@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,8 +39,16 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider>
-            {children}
-            <Toaster />
+            <SidebarProvider>
+              <AppSidebar />
+              <main className="w-full">
+                <div className="p-4">
+                  <SidebarTrigger />
+                  {children}
+                </div>
+              </main>
+              <Toaster />
+            </SidebarProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>
