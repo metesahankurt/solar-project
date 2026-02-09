@@ -1,51 +1,40 @@
 import React, { useMemo, useRef } from "react"
 import { Planet as PlanetType } from "@/data/planets"
-import { Line } from "@react-three/drei"
+import { Html, Line } from "@react-three/drei"
 import * as THREE from "three"
 import { useFrame } from "@react-three/fiber"
 import { useSimulation } from "./simulation-context"
-import { AU_METERS, J2000_MS, MS_PER_DAY } from "@/lib/astronomy"
+import { AU_METERS } from "@/lib/astronomy"
+import { Body, Ecliptic, HelioVector } from "astronomy-engine"
 
 interface PlanetProps {
   planet: PlanetType
 }
 
 export function Planet({ planet }: PlanetProps) {
+  const groupRef = useRef<THREE.Group>(null)
   const meshRef = useRef<THREE.Mesh>(null)
   const {
-    speed,
     isPaused,
-    daysPerSecond,
     selectedPlanet,
     setSelectedPlanet,
     setLiveMetrics,
     setHoveredPlanet,
     hoveredPlanet,
-    useRealTime,
+    simTimeMsRef,
+    showLabels,
+    showOrbits,
   } = useSimulation()
-  
-  const meanMotionRadPerDay = (2 * Math.PI) / (planet.orbitalPeriod / (24 * 60 * 60))
-
-  const getAngleForDate = (timestampMs: number) => {
-    const daysSinceJ2000 = (timestampMs - J2000_MS) / MS_PER_DAY
-    const base = (planet.meanLongitudeDeg * Math.PI) / 180
-    const angle = base + meanMotionRadPerDay * daysSinceJ2000
-    return ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
-  }
-
-  const [initialAngle] = React.useState(() => getAngleForDate(Date.now()))
-  const angleRef = useRef(initialAngle)
 
   // Simplification for skeleton: 
   // semiMajorAxis is in meters. 
   // Let's bring it down to a 3D scene scale.
   // 1 AU = 149.6e9 m.
   // Let's map 1 AU to 50 scene units for visualization.
-  const SCENE_AU = 50;
+  const SCENE_AU = 25;
   const REAL_AU = AU_METERS;
   
   const distance = (planet.semiMajorAxis / REAL_AU) * SCENE_AU;
-  const distanceAu = planet.semiMajorAxis / REAL_AU
 
   // Visual size sizing
   // Earth radius ~6371km. 
@@ -53,35 +42,40 @@ export function Planet({ planet }: PlanetProps) {
   // If Sun is 5 units (from Sun.tsx), Earth should be ~0.04 units preserving relative scale? 
   // That's too small to see.
   // Let's use a logarithmic or arbitrary visual scale for now so planets are visible.
-  const visualRadius = Math.max(0.5, Math.log10(planet.radius) * 0.2); 
+  const visualRadius = Math.max(0.8, Math.log10(planet.radius) * 0.34); 
   const lastMetricsUpdate = useRef(0)
 
   useFrame((state, delta) => {
-    if (isPaused || !meshRef.current) return
+    if (isPaused || !meshRef.current || !groupRef.current) return
 
-    if (useRealTime) {
-      angleRef.current = getAngleForDate(Date.now())
-    } else {
-      const simSecondsPassed = delta * speed * daysPerSecond * 24 * 60 * 60
-      const angleChange = (2 * Math.PI / planet.orbitalPeriod) * simSecondsPassed
-      angleRef.current += angleChange
-    }
+    const body = Body[planet.name as keyof typeof Body]
+    if (!body) return
 
-    const x = Math.cos(angleRef.current) * distance
-    const z = Math.sin(angleRef.current) * distance
-    meshRef.current.position.x = x
-    meshRef.current.position.z = z
+    const time = new Date(simTimeMsRef.current)
+    const helio = HelioVector(body, time)
+    const eclip = Ecliptic(helio)
+    const xAu = eclip.vec.x
+    const zAu = eclip.vec.y
+    const yAu = eclip.vec.z
+
+    const x = xAu * SCENE_AU
+    const z = zAu * SCENE_AU
+    const y = yAu * SCENE_AU * 0.2
+    groupRef.current.position.set(x, y, z)
 
     if (planet.name === selectedPlanet.name || planet.name === hoveredPlanet?.name) {
       const now = state.clock.elapsedTime
       if (now - lastMetricsUpdate.current > 0.1) {
-        const normalizedAngle = ((angleRef.current % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
+        const angle = Math.atan2(zAu, xAu)
+        const normalizedAngle = ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)
         const orbitalProgress = normalizedAngle / (2 * Math.PI)
+        const distanceAu = Math.sqrt(xAu * xAu + zAu * zAu)
         setLiveMetrics(planet.name, {
           angle: normalizedAngle,
-          xAu: Math.cos(normalizedAngle) * distanceAu,
-          zAu: Math.sin(normalizedAngle) * distanceAu,
+          xAu,
+          zAu,
           orbitalProgress,
+          distanceAu,
         })
         lastMetricsUpdate.current = now
       }
@@ -104,50 +98,73 @@ export function Planet({ planet }: PlanetProps) {
   return (
     <group>
       {/* Orbit Line */}
-      <Line points={orbitPoints} color="gray" opacity={0.3} transparent lineWidth={1} />
+      {showOrbits && (
+        <Line points={orbitPoints} color="#9aa1a8" opacity={0.45} transparent lineWidth={1} />
+      )}
 
       {/* Planet Mesh */}
-      <mesh
-        ref={meshRef}
-        position={[distance, 0, 0]}
-        onClick={() => setSelectedPlanet(planet)}
-        onPointerMove={(event) => {
-          setHoveredPlanet((prev) => {
-            if (
-              prev &&
-              prev.name === planet.name &&
-              Math.abs(prev.screenX - event.clientX) < 2 &&
-              Math.abs(prev.screenY - event.clientY) < 2
-            ) {
-              return prev
-            }
-            return {
+      <group ref={groupRef}>
+        <mesh
+          ref={meshRef}
+          onClick={() => setSelectedPlanet(planet)}
+          onPointerMove={(event) => {
+            setHoveredPlanet((prev) => {
+              if (
+                prev &&
+                prev.name === planet.name &&
+                Math.abs(prev.screenX - event.clientX) < 2 &&
+                Math.abs(prev.screenY - event.clientY) < 2
+              ) {
+                return prev
+              }
+              return {
+                name: planet.name,
+                screenX: event.clientX,
+                screenY: event.clientY,
+              }
+            })
+          }}
+          onPointerOver={(event) => {
+            document.body.style.cursor = "pointer"
+            setHoveredPlanet({
               name: planet.name,
               screenX: event.clientX,
               screenY: event.clientY,
-            }
-          })
-        }}
-        onPointerOver={(event) => {
-          document.body.style.cursor = "pointer"
-          setHoveredPlanet({
-            name: planet.name,
-            screenX: event.clientX,
-            screenY: event.clientY,
-          })
-        }}
-        onPointerOut={() => {
-          document.body.style.cursor = "default"
-          setHoveredPlanet(null)
-        }}
-      >
-        <sphereGeometry args={[visualRadius, 32, 32]} />
-        <meshStandardMaterial
-          color={planet.color}
-          emissive={isSelected ? planet.color : "#000000"}
-          emissiveIntensity={isSelected ? 0.5 : 0}
-        />
-      </mesh>
+            })
+          }}
+          onPointerOut={() => {
+            document.body.style.cursor = "default"
+            setHoveredPlanet(null)
+          }}
+        >
+          <sphereGeometry args={[visualRadius, 32, 32]} />
+          <meshStandardMaterial
+            color={planet.color}
+            emissive={isSelected ? planet.color : "#000000"}
+            emissiveIntensity={isSelected ? 0.5 : 0}
+          />
+        </mesh>
+
+        {planet.name === "Saturn" && (
+          <mesh rotation={[Math.PI / 2.2, 0, 0]}>
+            <ringGeometry args={[visualRadius * 1.4, visualRadius * 2.3, 64]} />
+            <meshStandardMaterial
+              color="#d6c59a"
+              opacity={0.6}
+              transparent
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+        )}
+
+        {showLabels && (
+          <Html position={[0, visualRadius * 1.8, 0]} center>
+            <div className="rounded bg-background/70 px-2 py-0.5 text-[10px] text-foreground shadow-sm backdrop-blur">
+              {planet.name}
+            </div>
+          </Html>
+        )}
+      </group>
     </group>
   )
 }

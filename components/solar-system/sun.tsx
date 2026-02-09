@@ -12,13 +12,13 @@ export function Sun() {
         Real radius is ~696,340 km. Let's say 1 unit = 1000 km -> 696 units.
         Too big. Let's pick a visual size, e.g., 20 units.
       */}
-      <sphereGeometry args={[5, 32, 32]} />
+      <sphereGeometry args={[7, 32, 32]} />
       <meshStandardMaterial 
         emissive={sun.color} 
-        emissiveIntensity={2} 
+        emissiveIntensity={2.5} 
         color={sun.color} 
       />
-      <pointLight intensity={1000} distance={2000} decay={2} />
+      <pointLight intensity={1400} distance={3000} decay={2} />
     </mesh>
   )
 }

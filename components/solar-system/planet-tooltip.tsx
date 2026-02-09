@@ -31,6 +31,7 @@ export function PlanetTooltip() {
           <div className="mt-2 space-y-1 text-muted-foreground">
             <div>Angle: {angleDeg?.toFixed(1)}°</div>
             <div>Orbit: {progress?.toFixed(1)}%</div>
+            <div>Distance: {metrics.distanceAu.toFixed(3)} AU</div>
           </div>
         )}
       </Card>

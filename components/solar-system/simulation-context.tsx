@@ -8,6 +8,7 @@ type LiveMetrics = {
   xAu: number
   zAu: number
   orbitalProgress: number
+  distanceAu: number
 }
 
 type HoveredPlanet = {
@@ -30,6 +31,17 @@ interface SimulationContextType {
   setHoveredPlanet: (hovered: HoveredPlanet | null) => void
   useRealTime: boolean
   setUseRealTime: (useRealTime: boolean) => void
+  simTimeMsRef: React.MutableRefObject<number>
+  showLabels: boolean
+  setShowLabels: (showLabels: boolean) => void
+  showOrbits: boolean
+  setShowOrbits: (showOrbits: boolean) => void
+  showAsteroids: boolean
+  setShowAsteroids: (showAsteroids: boolean) => void
+  showPluto: boolean
+  setShowPluto: (showPluto: boolean) => void
+  showMoon: boolean
+  setShowMoon: (showMoon: boolean) => void
 }
 
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined)
@@ -43,6 +55,12 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const [liveMetrics, setLiveMetricsState] = useState<Record<string, LiveMetrics>>({})
   const [hoveredPlanet, setHoveredPlanet] = useState<HoveredPlanet | null>(null)
   const [useRealTime, setUseRealTime] = useState(true)
+  const simTimeMsRef = React.useRef(Date.now())
+  const [showLabels, setShowLabels] = useState(true)
+  const [showOrbits, setShowOrbits] = useState(true)
+  const [showAsteroids, setShowAsteroids] = useState(true)
+  const [showPluto, setShowPluto] = useState(true)
+  const [showMoon, setShowMoon] = useState(true)
   
   // Base rate: 1 real second = 1 simulation day at 1x speed
   // This makes Earth orbit in ~365 seconds at 1x.
@@ -65,6 +83,17 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
         setHoveredPlanet,
         useRealTime,
         setUseRealTime,
+        simTimeMsRef,
+        showLabels,
+        setShowLabels,
+        showOrbits,
+        setShowOrbits,
+        showAsteroids,
+        setShowAsteroids,
+        showPluto,
+        setShowPluto,
+        showMoon,
+        setShowMoon,
       }}
     >
       {children}

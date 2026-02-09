@@ -124,6 +124,33 @@ export const planets: Planet[] = [
   }
 ];
 
+export const dwarfPlanets: Planet[] = [
+  {
+    name: "Pluto",
+    mass: 1.303e22,
+    radius: 1188.3,
+    radiusMeters: 1188300,
+    semiMajorAxis: 5906.4e9,
+    orbitalPeriod: 90560 * 24 * 60 * 60, // ~248 years
+    eccentricity: 0.249,
+    meanLongitudeDeg: 238.929038,
+    color: "#b9a89c",
+    description: "Pluto is a dwarf planet in the Kuiper belt with a highly eccentric orbit."
+  }
+];
+
+export const moonData = {
+  name: "Moon",
+  mass: 7.342e22,
+  radius: 1737.4,
+  radiusMeters: 1737400,
+  semiMajorAxis: 384400000, // m (from Earth)
+  orbitalPeriod: 27.321661 * 24 * 60 * 60,
+  eccentricity: 0.055,
+  color: "#c9c9c9",
+  description: "Earth's natural satellite.",
+};
+
 export const sun = {
   name: "Sun",
   mass: CONSTANTS.SOLAR_MASS,

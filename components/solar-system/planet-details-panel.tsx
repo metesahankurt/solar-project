@@ -75,6 +75,10 @@ export function PlanetDetailsPanel() {
                     <span>{progress?.toFixed(1)}%</span>
                   </div>
                   <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Heliocentric distance</span>
+                    <span>{formatNumber(metrics.distanceAu, 3)} AU</span>
+                  </div>
+                  <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Position (AU)</span>
                     <span>
                       x {formatNumber(metrics.xAu, 3)}, z {formatNumber(metrics.zAu, 3)}
