@@ -1,11 +1,11 @@
 import React, { useMemo, useRef } from "react"
 import { Planet as PlanetType } from "@/data/planets"
-import { Html, Line } from "@react-three/drei"
+import { Line } from "@react-three/drei"
 import * as THREE from "three"
-import { useFrame } from "@react-three/fiber"
+import { useFrame, useThree } from "@react-three/fiber"
 import { useSimulation } from "./simulation-context"
-import { AU_METERS } from "@/lib/astronomy"
-import { Body, Ecliptic, HelioVector } from "astronomy-engine"
+import { AU_METERS, MS_PER_DAY } from "@/lib/astronomy"
+import { Body, Ecliptic, HelioVector, PlanetOrbitalPeriod } from "astronomy-engine"
 
 interface PlanetProps {
   planet: PlanetType
@@ -22,9 +22,10 @@ export function Planet({ planet }: PlanetProps) {
     setHoveredPlanet,
     hoveredPlanet,
     simTimeMsRef,
-    showLabels,
     showOrbits,
+    setLabelPosition,
   } = useSimulation()
+  const { camera, size } = useThree()
 
   // Simplification for skeleton: 
   // semiMajorAxis is in meters. 
@@ -34,8 +35,6 @@ export function Planet({ planet }: PlanetProps) {
   const SCENE_AU = 25;
   const REAL_AU = AU_METERS;
   
-  const distance = (planet.semiMajorAxis / REAL_AU) * SCENE_AU;
-
   // Visual size sizing
   // Earth radius ~6371km. 
   // Sun radius ~696000km (~109x Earth).
@@ -44,6 +43,8 @@ export function Planet({ planet }: PlanetProps) {
   // Let's use a logarithmic or arbitrary visual scale for now so planets are visible.
   const visualRadius = Math.max(0.8, Math.log10(planet.radius) * 0.34); 
   const lastMetricsUpdate = useRef(0)
+  const labelUpdateRef = useRef(0)
+  const orbitEpochRef = useRef(Date.now())
 
   useFrame((state, delta) => {
     if (isPaused || !meshRef.current || !groupRef.current) return
@@ -80,18 +81,47 @@ export function Planet({ planet }: PlanetProps) {
         lastMetricsUpdate.current = now
       }
     }
+
+    const now = state.clock.elapsedTime
+    if (now - labelUpdateRef.current > 0.25) {
+      const pos = groupRef.current.position.clone().project(camera)
+      const x = (pos.x * 0.5 + 0.5) * size.width
+      const y = (-pos.y * 0.5 + 0.5) * size.height
+      const camDist = camera.position.length()
+      const priority =
+        (planet.name === selectedPlanet.name ? 1000 : 0) + planet.semiMajorAxis / REAL_AU
+      if (pos.z < 1) {
+        setLabelPosition({
+          name: planet.name,
+          x,
+          y,
+          priority,
+          distance: camDist,
+        })
+      }
+      labelUpdateRef.current = now
+    }
   })
 
   // Create orbit points for the line
   const orbitPoints = useMemo(() => {
-    const points = [];
-    const segments = 64;
-    for (let i = 0; i <= segments; i++) {
-      const theta = (i / segments) * 2 * Math.PI;
-      points.push(new THREE.Vector3(Math.cos(theta) * distance, 0, Math.sin(theta) * distance));
+    const body = Body[planet.name as keyof typeof Body]
+    if (!body) return []
+    const points: THREE.Vector3[] = []
+    const periodDays = PlanetOrbitalPeriod(body)
+    const segments = 240
+    for (let i = 0; i <= segments; i += 1) {
+      const fraction = i / segments
+      const time = new Date(orbitEpochRef.current + fraction * periodDays * MS_PER_DAY)
+      const helio = HelioVector(body, time)
+      const eclip = Ecliptic(helio)
+      const x = eclip.vec.x * SCENE_AU
+      const z = eclip.vec.y * SCENE_AU
+      const y = eclip.vec.z * SCENE_AU * 0.2
+      points.push(new THREE.Vector3(x, y, z))
     }
-    return points;
-  }, [distance]);
+    return points
+  }, [planet.name])
 
   const isSelected = selectedPlanet.name === planet.name
 
@@ -144,6 +174,15 @@ export function Planet({ planet }: PlanetProps) {
             emissiveIntensity={isSelected ? 0.5 : 0}
           />
         </mesh>
+        <mesh>
+          <sphereGeometry args={[visualRadius * 1.35, 24, 24]} />
+          <meshBasicMaterial
+            color={planet.color}
+            opacity={0.2}
+            transparent
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
 
         {planet.name === "Saturn" && (
           <mesh rotation={[Math.PI / 2.2, 0, 0]}>
@@ -157,13 +196,6 @@ export function Planet({ planet }: PlanetProps) {
           </mesh>
         )}
 
-        {showLabels && (
-          <Html position={[0, visualRadius * 1.8, 0]} center>
-            <div className="rounded bg-background/70 px-2 py-0.5 text-[10px] text-foreground shadow-sm backdrop-blur">
-              {planet.name}
-            </div>
-          </Html>
-        )}
       </group>
     </group>
   )

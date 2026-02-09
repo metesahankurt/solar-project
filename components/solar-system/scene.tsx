@@ -19,6 +19,7 @@ import { Switch } from "@/components/ui/switch"
 import { Play, Pause } from "lucide-react"
 import { PlanetDetailsPanel } from "./planet-details-panel"
 import { PlanetTooltip } from "./planet-tooltip"
+import { PlanetLabelLayer } from "./label-layer"
 
 function SimulationControls() {
   const {
@@ -183,6 +184,7 @@ export function SolarSystemScene() {
         <SimulationControls />
         <PlanetDetailsPanel />
         <PlanetTooltip />
+        <PlanetLabelLayer />
       </div>
     </SimulationProvider>
   )

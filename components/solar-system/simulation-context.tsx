@@ -17,6 +17,14 @@ type HoveredPlanet = {
   screenY: number
 }
 
+type LabelInfo = {
+  name: string
+  x: number
+  y: number
+  priority: number
+  distance: number
+}
+
 interface SimulationContextType {
   speed: number
   setSpeed: (speed: number) => void
@@ -42,6 +50,8 @@ interface SimulationContextType {
   setShowPluto: (showPluto: boolean) => void
   showMoon: boolean
   setShowMoon: (showMoon: boolean) => void
+  labelPositions: Record<string, LabelInfo>
+  setLabelPosition: (info: LabelInfo) => void
 }
 
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined)
@@ -61,6 +71,8 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const [showAsteroids, setShowAsteroids] = useState(true)
   const [showPluto, setShowPluto] = useState(true)
   const [showMoon, setShowMoon] = useState(true)
+  const labelPositionsRef = React.useRef<Record<string, LabelInfo>>({})
+  const [labelPositions, setLabelPositions] = useState<Record<string, LabelInfo>>({})
   
   // Base rate: 1 real second = 1 simulation day at 1x speed
   // This makes Earth orbit in ~365 seconds at 1x.
@@ -94,6 +106,11 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
         setShowPluto,
         showMoon,
         setShowMoon,
+        labelPositions,
+        setLabelPosition: (info) => {
+          labelPositionsRef.current = { ...labelPositionsRef.current, [info.name]: info }
+          setLabelPositions(labelPositionsRef.current)
+        },
       }}
     >
       {children}

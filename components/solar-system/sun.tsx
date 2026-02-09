@@ -18,6 +18,14 @@ export function Sun() {
         emissiveIntensity={2.5} 
         color={sun.color} 
       />
+      <mesh>
+        <sphereGeometry args={[10, 32, 32]} />
+        <meshBasicMaterial
+          color="#f6e58d"
+          opacity={0.35}
+          transparent
+        />
+      </mesh>
       <pointLight intensity={1400} distance={3000} decay={2} />
     </mesh>
   )
