@@ -8,3 +8,4 @@ export const PARSEC_KM = 3.0857e13
 export const PARSEC_METERS = PARSEC_KM * 1000
 export const J2000_MS = Date.UTC(2000, 0, 1, 12, 0, 0)
 export const MS_PER_DAY = 86_400_000
+export const SCENE_AU = 25

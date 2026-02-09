@@ -3,8 +3,7 @@
 import React, { useMemo } from "react"
 import * as THREE from "three"
 import { useSimulation } from "./simulation-context"
-
-const SCENE_AU = 25
+import { SCENE_AU } from "@/lib/astronomy"
 
 export function AsteroidBelt() {
   const { showAsteroids } = useSimulation()

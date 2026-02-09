@@ -19,6 +19,8 @@ export default function MethodsPage() {
             <li>Interplanetary distances use average or representative values.</li>
             <li>Plane times assume a constant commercial cruising speed.</li>
             <li>Log-scale views are used to compare orders of magnitude.</li>
+            <li>Planet positions are derived from VSOP87-based ephemerides (astronomy-engine).</li>
+            <li>Optional light-time correction and barycenter frames are provided for higher fidelity.</li>
           </ul>
           <div className="rounded-md bg-muted p-4 text-center overflow-x-auto">
             <MathDisplay formula="t = d / c" block />

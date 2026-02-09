@@ -4,8 +4,18 @@ import { Line } from "@react-three/drei"
 import * as THREE from "three"
 import { useFrame, useThree } from "@react-three/fiber"
 import { useSimulation } from "./simulation-context"
-import { AU_METERS, MS_PER_DAY } from "@/lib/astronomy"
-import { Body, Ecliptic, HelioVector, PlanetOrbitalPeriod } from "astronomy-engine"
+import { AU_METERS, MS_PER_DAY, SCENE_AU } from "@/lib/astronomy"
+import {
+  AstroTime,
+  BaryState,
+  Body,
+  CorrectLightTravel,
+  Ecliptic,
+  HelioVector,
+  MakeTime,
+  PlanetOrbitalPeriod,
+  Vector,
+} from "astronomy-engine"
 
 interface PlanetProps {
   planet: PlanetType
@@ -24,6 +34,8 @@ export function Planet({ planet }: PlanetProps) {
     simTimeMsRef,
     showOrbits,
     setLabelPosition,
+    useLightTimeCorrection,
+    useBarycenter,
   } = useSimulation()
   const { camera, size } = useThree()
 
@@ -32,7 +44,6 @@ export function Planet({ planet }: PlanetProps) {
   // Let's bring it down to a 3D scene scale.
   // 1 AU = 149.6e9 m.
   // Let's map 1 AU to 50 scene units for visualization.
-  const SCENE_AU = 25;
   const REAL_AU = AU_METERS;
   
   // Visual size sizing
@@ -52,9 +63,16 @@ export function Planet({ planet }: PlanetProps) {
     const body = Body[planet.name as keyof typeof Body]
     if (!body) return
 
-    const time = new Date(simTimeMsRef.current)
-    const helio = HelioVector(body, time)
-    const eclip = Ecliptic(helio)
+    const time = MakeTime(new Date(simTimeMsRef.current))
+    const toVector = (t: AstroTime) => {
+      if (useBarycenter) {
+        const state = BaryState(body, t)
+        return new Vector(state.x, state.y, state.z, t)
+      }
+      return HelioVector(body, t)
+    }
+    const vec = useLightTimeCorrection ? CorrectLightTravel(toVector, time) : toVector(time)
+    const eclip = Ecliptic(vec)
     const xAu = eclip.vec.x
     const zAu = eclip.vec.y
     const yAu = eclip.vec.z
@@ -112,24 +130,32 @@ export function Planet({ planet }: PlanetProps) {
     const segments = 240
     for (let i = 0; i <= segments; i += 1) {
       const fraction = i / segments
-      const time = new Date(orbitEpochRef.current + fraction * periodDays * MS_PER_DAY)
-      const helio = HelioVector(body, time)
-      const eclip = Ecliptic(helio)
+      const time = MakeTime(new Date(orbitEpochRef.current + fraction * periodDays * MS_PER_DAY))
+      const vec = (() => {
+        if (useBarycenter) {
+          const state = BaryState(body, time)
+          return new Vector(state.x, state.y, state.z, time)
+        }
+        return HelioVector(body, time)
+      })()
+      const eclip = Ecliptic(vec)
       const x = eclip.vec.x * SCENE_AU
       const z = eclip.vec.y * SCENE_AU
       const y = eclip.vec.z * SCENE_AU * 0.2
       points.push(new THREE.Vector3(x, y, z))
     }
     return points
-  }, [planet.name])
+  }, [planet.name, useBarycenter])
 
   const isSelected = selectedPlanet.name === planet.name
+  const orbitOpacity = isSelected ? 0.85 : planet.semiMajorAxis / REAL_AU > 20 ? 0.25 : 0.4
+  const orbitColor = isSelected ? "#e2e8f0" : "#9aa1a8"
 
   return (
     <group>
       {/* Orbit Line */}
       {showOrbits && (
-        <Line points={orbitPoints} color="#9aa1a8" opacity={0.45} transparent lineWidth={1} />
+        <Line points={orbitPoints} color={orbitColor} opacity={orbitOpacity} transparent lineWidth={1} />
       )}
 
       {/* Planet Mesh */}

@@ -25,6 +25,8 @@ type LabelInfo = {
   distance: number
 }
 
+type StarPreset = "calm" | "balanced" | "deep"
+
 interface SimulationContextType {
   speed: number
   setSpeed: (speed: number) => void
@@ -54,6 +56,18 @@ interface SimulationContextType {
   setShowStars: (showStars: boolean) => void
   showControlsPanel: boolean
   setShowControlsPanel: (showControlsPanel: boolean) => void
+  useLightTimeCorrection: boolean
+  setUseLightTimeCorrection: (useLightTimeCorrection: boolean) => void
+  useBarycenter: boolean
+  setUseBarycenter: (useBarycenter: boolean) => void
+  starDensity: number
+  setStarDensity: (starDensity: number) => void
+  starBrightness: number
+  setStarBrightness: (starBrightness: number) => void
+  starSize: number
+  setStarSize: (starSize: number) => void
+  starPreset: StarPreset
+  setStarPreset: (preset: StarPreset) => void
   labelPositions: Record<string, LabelInfo>
   setLabelPosition: (info: LabelInfo) => void
 }
@@ -77,6 +91,12 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const [showMoon, setShowMoon] = useState(true)
   const [showStars, setShowStars] = useState(true)
   const [showControlsPanel, setShowControlsPanel] = useState(true)
+  const [useLightTimeCorrection, setUseLightTimeCorrection] = useState(false)
+  const [useBarycenter, setUseBarycenter] = useState(false)
+  const [starDensity, setStarDensity] = useState(14000)
+  const [starBrightness, setStarBrightness] = useState(0.7)
+  const [starSize, setStarSize] = useState(0.9)
+  const [starPreset, setStarPresetState] = useState<StarPreset>("balanced")
   const labelPositionsRef = React.useRef<Record<string, LabelInfo>>({})
   const [labelPositions, setLabelPositions] = useState<Record<string, LabelInfo>>({})
   
@@ -116,6 +136,33 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
         setShowStars,
         showControlsPanel,
         setShowControlsPanel,
+        useLightTimeCorrection,
+        setUseLightTimeCorrection,
+        useBarycenter,
+        setUseBarycenter,
+        starDensity,
+        setStarDensity,
+        starBrightness,
+        setStarBrightness,
+        starSize,
+        setStarSize,
+        starPreset,
+        setStarPreset: (preset) => {
+          setStarPresetState(preset)
+          if (preset === "calm") {
+            setStarDensity(8000)
+            setStarBrightness(0.45)
+            setStarSize(0.7)
+          } else if (preset === "deep") {
+            setStarDensity(22000)
+            setStarBrightness(0.9)
+            setStarSize(1.1)
+          } else {
+            setStarDensity(14000)
+            setStarBrightness(0.7)
+            setStarSize(0.9)
+          }
+        },
         labelPositions,
         setLabelPosition: (info) => {
           labelPositionsRef.current = { ...labelPositionsRef.current, [info.name]: info }

@@ -2,7 +2,7 @@
 
 import React, { Suspense } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
-import { OrbitControls, Stars } from "@react-three/drei"
+import { OrbitControls } from "@react-three/drei"
 import { dwarfPlanets, planets } from "@/data/planets"
 import { Sun } from "./sun"
 import { Planet } from "./planet"
@@ -16,10 +16,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { EyeOff, Play, Pause } from "lucide-react"
+import { EyeOff, LocateFixed, Play, Pause } from "lucide-react"
 import { PlanetDetailsPanel } from "./planet-details-panel"
 import { PlanetTooltip } from "./planet-tooltip"
 import { PlanetLabelLayer } from "./label-layer"
+import { StarField } from "./star-field"
+import { useRef } from "react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { AU_METERS, SCENE_AU } from "@/lib/astronomy"
 
 function SimulationControls() {
   const {
@@ -43,18 +47,45 @@ function SimulationControls() {
     setShowStars,
     showControlsPanel,
     setShowControlsPanel,
+    useLightTimeCorrection,
+    setUseLightTimeCorrection,
+    useBarycenter,
+    setUseBarycenter,
+    starDensity,
+    setStarDensity,
+    starBrightness,
+    setStarBrightness,
+    starSize,
+    setStarSize,
+    starPreset,
+    setStarPreset,
   } = useSimulation()
 
   if (!showControlsPanel) {
     return (
-      <Button
-        variant="secondary"
-        size="sm"
-        className="absolute bottom-4 left-4 z-20"
-        onClick={() => setShowControlsPanel(true)}
-      >
-        Show Controls
-      </Button>
+      <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => setShowControlsPanel(true)}
+        >
+          Show Controls
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => window.dispatchEvent(new CustomEvent("solar:reset-view"))}
+        >
+          Reset View
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => window.dispatchEvent(new CustomEvent("solar:fit-orbits"))}
+        >
+          Fit Orbits
+        </Button>
+      </div>
     )
   }
 
@@ -70,6 +101,22 @@ function SimulationControls() {
             className="h-8 w-8"
           >
             {isPaused ? <Play className="size-4" /> : <Pause className="size-4" />}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => window.dispatchEvent(new CustomEvent("solar:reset-view"))}
+          >
+            <LocateFixed className="size-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => window.dispatchEvent(new CustomEvent("solar:fit-orbits"))}
+          >
+            Fit
           </Button>
           <Button
             variant="ghost"
@@ -106,6 +153,74 @@ function SimulationControls() {
         )}
         <div className="space-y-2 pt-1">
           <div className="flex items-center justify-between">
+            <Label className="text-xs">Light-time correction</Label>
+            <Switch checked={useLightTimeCorrection} onCheckedChange={setUseLightTimeCorrection} />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs">Barycenter frame</Label>
+            <Switch checked={useBarycenter} onCheckedChange={setUseBarycenter} />
+          </div>
+        </div>
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs">Stars</Label>
+            <Switch checked={showStars} onCheckedChange={setShowStars} />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground">Star preset</Label>
+            <Select value={starPreset} onValueChange={(val) => setStarPreset(val as any)}>
+              <SelectTrigger className="h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="calm">Calm</SelectItem>
+                <SelectItem value="balanced">Balanced</SelectItem>
+                <SelectItem value="deep">Deep</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <Label className="text-xs">Star density</Label>
+              <span>{Math.round(starDensity)}</span>
+            </div>
+            <Slider
+              value={[starDensity]}
+              min={4000}
+              max={24000}
+              step={500}
+              onValueChange={(val) => setStarDensity(val[0])}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <Label className="text-xs">Star brightness</Label>
+              <span>{starBrightness.toFixed(2)}</span>
+            </div>
+            <Slider
+              value={[starBrightness]}
+              min={0.2}
+              max={1}
+              step={0.05}
+              onValueChange={(val) => setStarBrightness(val[0])}
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <Label className="text-xs">Star size</Label>
+              <span>{starSize.toFixed(2)}</span>
+            </div>
+            <Slider
+              value={[starSize]}
+              min={0.4}
+              max={1.6}
+              step={0.05}
+              onValueChange={(val) => setStarSize(val[0])}
+            />
+          </div>
+        </div>
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between">
             <Label className="text-xs">Show labels</Label>
             <Switch checked={showLabels} onCheckedChange={setShowLabels} />
           </div>
@@ -116,10 +231,6 @@ function SimulationControls() {
           <div className="flex items-center justify-between">
             <Label className="text-xs">Asteroid belt</Label>
             <Switch checked={showAsteroids} onCheckedChange={setShowAsteroids} />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label className="text-xs">Stars</Label>
-            <Switch checked={showStars} onCheckedChange={setShowStars} />
           </div>
           <div className="flex items-center justify-between">
             <Label className="text-xs">Show Pluto</Label>
@@ -152,7 +263,7 @@ function SimulationClock() {
 }
 
 function SceneBodies() {
-  const { showPluto, showMoon, showStars } = useSimulation()
+  const { showPluto, showMoon } = useSimulation()
   const pluto = dwarfPlanets[0]
 
   return (
@@ -164,14 +275,49 @@ function SceneBodies() {
       {showPluto && pluto && <Planet key={pluto.name} planet={pluto} />}
       {showMoon && <Moon />}
       <AsteroidBelt />
-      {showStars && (
-        <Stars radius={4000} depth={400} count={10000} factor={4} saturation={0} fade speed={1} />
-      )}
+      <StarField />
     </>
   )
 }
 
+function SceneController({ controlsRef }: { controlsRef: React.MutableRefObject<any> }) {
+  const { showPluto } = useSimulation()
+
+  React.useEffect(() => {
+    const handler = () => {
+      const controls = controlsRef.current
+      if (!controls) return
+      controls.target.set(0, 0, 0)
+      controls.object.position.set(0, 200, 900)
+      controls.update()
+    }
+    const fitHandler = () => {
+      const controls = controlsRef.current
+      if (!controls) return
+      const maxMeters = Math.max(
+        ...planets.map((planet) => planet.semiMajorAxis),
+        showPluto && dwarfPlanets[0] ? dwarfPlanets[0].semiMajorAxis : 0
+      )
+      const maxAu = maxMeters / AU_METERS
+      const distance = Math.max(900, maxAu * SCENE_AU * 3.2)
+      controls.target.set(0, 0, 0)
+      controls.object.position.set(0, distance * 0.35, distance)
+      controls.update()
+    }
+    window.addEventListener("solar:reset-view", handler)
+    window.addEventListener("solar:fit-orbits", fitHandler)
+    return () => {
+      window.removeEventListener("solar:reset-view", handler)
+      window.removeEventListener("solar:fit-orbits", fitHandler)
+    }
+  }, [controlsRef, showPluto])
+
+  return null
+}
+
 export function SolarSystemScene() {
+  const controlsRef = useRef<any>(null)
+
   return (
     <SimulationProvider>
       <div className="w-full h-full bg-black relative">
@@ -181,9 +327,10 @@ export function SolarSystemScene() {
           gl={{ antialias: true, powerPreference: "high-performance" }}
         >
           <SimulationClock />
+          <SceneController controlsRef={controlsRef} />
           <Suspense fallback={null}>
             <color attach="background" args={["#05070c"]} />
-            <fog attach="fog" args={["#05070c", 800, 7000]} />
+            <fog attach="fog" args={["#05070c", 5000, 30000]} />
             <ambientLight intensity={0.2} />
             <mesh>
               <sphereGeometry args={[6000, 32, 32]} />
@@ -193,13 +340,14 @@ export function SolarSystemScene() {
             <SceneBodies />
 
             <OrbitControls 
+              ref={controlsRef}
               enablePan={true} 
               enableZoom={true} 
               enableRotate={true}
               enableDamping={true}
               dampingFactor={0.08}
               minDistance={40}
-              maxDistance={6000}
+              maxDistance={9000}
               target={[0, 0, 0]}
             />
           </Suspense>

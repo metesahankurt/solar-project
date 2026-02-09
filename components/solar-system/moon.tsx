@@ -7,8 +7,7 @@ import { useFrame } from "@react-three/fiber"
 import { Body, Ecliptic, GeoMoon, HelioVector } from "astronomy-engine"
 import { moonData } from "@/data/planets"
 import { useSimulation } from "./simulation-context"
-
-const SCENE_AU = 25
+import { SCENE_AU } from "@/lib/astronomy"
 
 export function Moon() {
   const groupRef = useRef<THREE.Group>(null)
