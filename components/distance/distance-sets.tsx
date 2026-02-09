@@ -2,8 +2,8 @@
 
 import React from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { AU_KM, LIGHT_YEAR_KM, SPEED_OF_LIGHT_KM_S } from "@/lib/astronomy"
 
-const SPEED_OF_LIGHT_KM_S = 299_792.458
 const PLANE_SPEED_KM_H = 900
 const SECONDS_PER_MINUTE = 60
 const SECONDS_PER_HOUR = 60 * SECONDS_PER_MINUTE
@@ -21,8 +21,8 @@ const DISTANCE_SETS = [
   {
     id: "earth-sun",
     label: "Earth-Sun",
-    distanceKm: 149_597_870,
-    distanceDisplay: "1 AU (149,597,870 km)",
+    distanceKm: AU_KM,
+    distanceDisplay: "1 AU (149,597,870.7 km)",
     note: "Mean distance",
   },
   {
@@ -49,14 +49,14 @@ const DISTANCE_SETS = [
   {
     id: "sun-proxima",
     label: "Sun-Proxima Centauri",
-    distanceKm: 4.2465 * 9.4607e12,
+    distanceKm: 4.2465 * LIGHT_YEAR_KM,
     distanceDisplay: "4.2465 light years",
     note: "Closest star system",
   },
   {
     id: "sun-andromeda",
     label: "Sun-Andromeda Galaxy",
-    distanceKm: 2.537e6 * 9.4607e12,
+    distanceKm: 2.537e6 * LIGHT_YEAR_KM,
     distanceDisplay: "2.537 million light years",
     note: "Mean distance",
   },

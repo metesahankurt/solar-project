@@ -15,9 +15,7 @@ import {
   Scatter,
 } from "recharts"
 import { planets } from "@/data/planets"
-
-// Constants
-const AU_TO_KM = 149597870.7
+import { AU_KM, AU_METERS } from "@/lib/astronomy"
 
 export function KeplerCalculator() {
   const [distance, setDistance] = useState<number>(1) // AU
@@ -34,7 +32,7 @@ export function KeplerCalculator() {
   // v = 2 * pi * r / T
   const velocity = useMemo(() => {
     if (period <= 0) return 0
-    const circumference = 2 * Math.PI * distance * AU_TO_KM
+    const circumference = 2 * Math.PI * distance * AU_KM
     const hours = period * 365.25 * 24
     return circumference / (hours * 3600) // km/s
   }, [distance, period])
@@ -44,7 +42,7 @@ export function KeplerCalculator() {
   const chartData = useMemo(() => {
     const realPlanets = planets.map(p => ({
       name: p.name,
-      au: p.semiMajorAxis / 149.6e9, // Convert m to AU approx
+      au: p.semiMajorAxis / AU_METERS, // Convert m to AU
       period: p.orbitalPeriod / (365.25 * 24 * 3600), // Convert s to Years approx
       type: "Real Planet",
       fill: "hsl(var(--primary))"

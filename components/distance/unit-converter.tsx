@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowRightLeft } from "lucide-react"
+import { AU_METERS, LIGHT_YEAR_METERS, PARSEC_METERS } from "@/lib/astronomy"
 
 // Conversion rates to meters
 const UNIT_TO_METERS: Record<string, number> = {
   km: 1000,
-  au: 1.496e11,
-  ly: 9.461e15,
-  pc: 3.086e16,
+  au: AU_METERS,
+  ly: LIGHT_YEAR_METERS,
+  pc: PARSEC_METERS,
 }
 
 const UNITS = [

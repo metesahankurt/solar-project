@@ -1,0 +1,10 @@
+export const AU_METERS = 149_597_870_700
+export const AU_KM = AU_METERS / 1000
+export const SPEED_OF_LIGHT_M_S = 299_792_458
+export const SPEED_OF_LIGHT_KM_S = SPEED_OF_LIGHT_M_S / 1000
+export const LIGHT_YEAR_KM = 9.4607e12
+export const LIGHT_YEAR_METERS = LIGHT_YEAR_KM * 1000
+export const PARSEC_KM = 3.0857e13
+export const PARSEC_METERS = PARSEC_KM * 1000
+export const J2000_MS = Date.UTC(2000, 0, 1, 12, 0, 0)
+export const MS_PER_DAY = 86_400_000

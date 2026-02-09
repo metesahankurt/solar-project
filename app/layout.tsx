@@ -43,9 +43,9 @@ export default function RootLayout({
             <SidebarProvider>
               <AppSidebar />
               <SidebarInset>
-                <main className="relative w-full h-full flex flex-col overflow-hidden">
+                <main className="relative flex min-h-svh w-full min-w-0 flex-1 flex-col overflow-hidden">
                   <NavTrigger />
-                  <div className="flex-1 overflow-auto">
+                  <div className="flex-1 min-h-0 overflow-auto">
                     {children}
                   </div>
                 </main>
