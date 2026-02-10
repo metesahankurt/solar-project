@@ -58,7 +58,7 @@ interface SimulationContextType {
   liveMetrics: Record<string, LiveMetrics>
   setLiveMetrics: (name: string, metrics: LiveMetrics) => void
   hoveredPlanet: HoveredPlanet | null
-  setHoveredPlanet: (hovered: HoveredPlanet | null) => void
+  setHoveredPlanet: React.Dispatch<React.SetStateAction<HoveredPlanet | null>>
   useRealTime: boolean
   setUseRealTime: (useRealTime: boolean) => void
   simTimeMsRef: React.MutableRefObject<number>
