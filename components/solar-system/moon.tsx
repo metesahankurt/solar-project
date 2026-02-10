@@ -11,7 +11,7 @@ import { SCENE_AU } from "@/lib/astronomy"
 
 export function Moon() {
   const groupRef = useRef<THREE.Group>(null)
-  const { simTimeMsRef, showOrbits, setLabelPosition } = useSimulation()
+  const { simTimeMsRef, showOrbits, setLabelPosition, setSelectedPlanet } = useSimulation()
   const orbitEpochRef = useRef(Date.now())
   const lastOrbitUpdate = useRef(0)
   const [orbitEpoch, setOrbitEpoch] = React.useState(() => simTimeMsRef.current)
@@ -78,7 +78,7 @@ export function Moon() {
       {showOrbits && orbitPoints.length > 0 && (
         <Line points={orbitPoints} color="#9aa1a8" opacity={0.35} transparent lineWidth={1} />
       )}
-      <mesh>
+      <mesh onClick={() => setSelectedPlanet(moonData)}>
         <sphereGeometry args={[visualRadius, 24, 24]} />
         <meshStandardMaterial color={moonData.color} />
       </mesh>

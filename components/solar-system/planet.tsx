@@ -36,6 +36,7 @@ export function Planet({ planet }: PlanetProps) {
     setLabelPosition,
     useLightTimeCorrection,
     useBarycenter,
+    showOnlySelectedOrbit,
   } = useSimulation()
   const { camera, size } = useThree()
 
@@ -154,7 +155,7 @@ export function Planet({ planet }: PlanetProps) {
   return (
     <group>
       {/* Orbit Line */}
-      {showOrbits && (
+      {showOrbits && (!showOnlySelectedOrbit || isSelected) && (
         <Line points={orbitPoints} color={orbitColor} opacity={orbitOpacity} transparent lineWidth={1} />
       )}
 

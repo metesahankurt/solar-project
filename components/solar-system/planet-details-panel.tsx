@@ -103,10 +103,17 @@ export function PlanetDetailsPanel() {
                 <span className="text-muted-foreground">Semi-major axis</span>
                 <span>{formatNumber(distanceKm)} km</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Distance (AU)</span>
-                <span>{formatNumber(distanceAu, 3)} AU</span>
-              </div>
+              {selectedPlanet.name !== "Moon" ? (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Distance (AU)</span>
+                  <span>{formatNumber(distanceAu, 3)} AU</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Distance (Earth)</span>
+                  <span>{formatNumber(distanceKm)} km</span>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Orbital period</span>
                 <span>{formatNumber(orbitalDays, 1)} days</span>

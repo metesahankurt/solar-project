@@ -9,10 +9,17 @@ function estimateWidthPx(name: string) {
 }
 
 export function PlanetLabelLayer() {
-  const { labelPositions, showLabels } = useSimulation()
+  const {
+    labelPositions,
+    showLabels,
+    labelMode,
+    selectedPlanet,
+    hoveredPlanet,
+    isInteracting,
+  } = useSimulation()
   const [viewport, setViewport] = React.useState({ width: 0, height: 0 })
 
-  if (!showLabels) return null
+  if (!showLabels || isInteracting) return null
 
   React.useEffect(() => {
     const update = () =>
@@ -24,6 +31,15 @@ export function PlanetLabelLayer() {
 
   const labels = Object.values(labelPositions)
     .filter((label) => Number.isFinite(label.x) && Number.isFinite(label.y))
+    .filter((label) => {
+      if (labelMode === "focus") {
+        return label.name === selectedPlanet.name || label.name === hoveredPlanet?.name
+      }
+      if (labelMode === "minimal") {
+        return label.distance > 600 || label.name === selectedPlanet.name
+      }
+      return true
+    })
     .sort((a, b) => b.priority - a.priority)
 
   const placed: Array<{ x: number; y: number; w: number; h: number }> = []
@@ -59,7 +75,10 @@ export function PlanetLabelLayer() {
             transform: `translate(-50%, -50%) scale(${Math.max(0.85, Math.min(1, 1400 / Math.max(600, label.distance)))})`,
           }}
         >
-          <Badge variant="secondary" className="bg-background/80 text-foreground shadow-sm backdrop-blur">
+          <Badge
+            variant="secondary"
+            className="bg-background/80 text-foreground shadow-sm backdrop-blur"
+          >
             {label.name}
           </Badge>
         </div>

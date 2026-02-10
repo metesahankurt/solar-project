@@ -40,7 +40,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider>
-            <SidebarProvider>
+            <SidebarProvider defaultOpen={false}>
               <AppSidebar />
               <SidebarInset>
                 <main className="relative flex min-h-svh w-full min-w-0 flex-1 flex-col overflow-hidden">

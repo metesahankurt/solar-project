@@ -13,7 +13,7 @@ function seededRandom(seed: number) {
 }
 
 export function StarField() {
-  const { showStars, starDensity, starBrightness, starSize } = useSimulation()
+  const { showStars, starDensity, starBrightness, starSize, performanceStars } = useSimulation()
 
   const geometry = useMemo(() => {
     const radius = 5000
@@ -22,7 +22,8 @@ export function StarField() {
       typeof window !== "undefined" && window.devicePixelRatio
         ? window.devicePixelRatio
         : 1
-    const count = Math.max(1000, Math.round(starDensity / Math.max(1, dpr)))
+    const effectiveDensity = performanceStars ? Math.min(starDensity, 6000) : starDensity
+    const count = Math.max(1000, Math.round(effectiveDensity / Math.max(1, dpr)))
     const rand = seededRandom(1337)
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
@@ -55,7 +56,7 @@ export function StarField() {
   return (
     <points geometry={geometry}>
       <pointsMaterial
-        vertexColors
+        vertexColors={!performanceStars}
         size={starSize}
         opacity={starBrightness}
         transparent

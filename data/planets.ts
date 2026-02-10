@@ -139,7 +139,7 @@ export const dwarfPlanets: Planet[] = [
   }
 ];
 
-export const moonData = {
+export const moonData: Planet = {
   name: "Moon",
   mass: 7.342e22,
   radius: 1737.4,
@@ -147,6 +147,7 @@ export const moonData = {
   semiMajorAxis: 384400000, // m (from Earth)
   orbitalPeriod: 27.321661 * 24 * 60 * 60,
   eccentricity: 0.055,
+  meanLongitudeDeg: 0,
   color: "#c9c9c9",
   description: "Earth's natural satellite.",
 };
