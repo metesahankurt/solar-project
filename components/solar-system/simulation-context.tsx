@@ -103,6 +103,12 @@ interface SimulationContextType {
   setLabelPosition: (info: LabelInfo) => void
   viewDistanceAu: number
   setViewDistanceAu: (viewDistanceAu: number) => void
+  selectedDeepObjectId: string | null
+  setSelectedDeepObjectId: (id: string | null) => void
+  selectedClusterId: string | null
+  setSelectedClusterId: (id: string | null) => void
+  selected2mrsId: string | null
+  setSelected2mrsId: (id: string | null) => void
 }
 
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined)
@@ -136,6 +142,9 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const [performanceMode, setPerformanceMode] = useState(DEFAULT_SETTINGS.performanceMode)
   const [isInteracting, setIsInteracting] = useState(false)
   const [viewDistanceAu, setViewDistanceAu] = useState(1)
+  const [selectedDeepObjectId, setSelectedDeepObjectId] = useState<string | null>(null)
+  const [selectedClusterId, setSelectedClusterId] = useState<string | null>(null)
+  const [selected2mrsId, setSelected2mrsId] = useState<string | null>(null)
   const resetDefaults = () => {
     setShowAsteroids(DEFAULT_SETTINGS.showAsteroids)
     setShowPluto(DEFAULT_SETTINGS.showPluto)
@@ -263,6 +272,12 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
         },
         viewDistanceAu,
         setViewDistanceAu,
+        selectedDeepObjectId,
+        setSelectedDeepObjectId,
+        selectedClusterId,
+        setSelectedClusterId,
+        selected2mrsId,
+        setSelected2mrsId,
       }}
     >
       {children}

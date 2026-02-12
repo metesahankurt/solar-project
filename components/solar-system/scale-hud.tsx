@@ -24,8 +24,11 @@ export function ScaleHud() {
     { name: "Heliosphere", active: viewDistanceAu >= 150 },
     { name: "Oort Cloud", active: viewDistanceAu >= 1000 },
     { name: "Milky Way", active: viewLy >= 100_000 },
-    { name: "Local Group", active: viewLy >= 1_000_000 },
-    { name: "Laniakea", active: viewLy >= 80_000_000 },
+    { name: "NGC/IC Catalog", active: viewLy >= 50_000 },
+    { name: "2MRS Galaxies", active: viewLy >= 500_000 },
+    { name: "Density Field", active: viewLy >= 700_000 },
+    { name: "Cosmic Web", active: viewLy >= 1_000_000 },
+    { name: "Abell Clusters", active: viewLy >= 2_000_000 },
     { name: "Observable Universe", active: viewLy >= 5_000_000_000 },
   ]
 

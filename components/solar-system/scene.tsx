@@ -22,6 +22,8 @@ import { PlanetTooltip } from "./planet-tooltip"
 import { PlanetLabelLayer } from "./label-layer"
 import { StarField } from "./star-field"
 import { ScaleHud } from "./scale-hud"
+import { NGCLayer } from "./ngc-layer"
+import { NGCDetailsPanel } from "./ngc-details-panel"
 import { useRef } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -34,9 +36,13 @@ import { KuiperBelt } from "./kuiper-belt"
 import { Heliosphere } from "./heliosphere"
 import { OortCloud } from "./oort-cloud"
 import { GalacticDisk } from "./galactic-disk"
-import { LocalGroup } from "./local-group"
-import { Laniakea } from "./laniakea"
 import { ObservableUniverse } from "./observable-universe"
+import { AbellLayer } from "./abell-layer"
+import { AbellDetailsPanel } from "./abell-details-panel"
+import { TwoMRSLayer } from "./twomrs-layer"
+import { TwoMRSDetailsPanel } from "./twomrs-details-panel"
+import { CosmicWeb } from "./cosmic-web"
+import { DensityField } from "./density-field"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -531,8 +537,11 @@ function SceneBodies() {
       <Heliosphere />
       <OortCloud />
       <GalacticDisk />
-      <LocalGroup />
-      <Laniakea />
+      <NGCLayer />
+      <TwoMRSLayer />
+      <DensityField />
+      <CosmicWeb />
+      <AbellLayer />
       <ObservableUniverse />
       <StarField />
     </>
@@ -595,49 +604,64 @@ function SceneOrbitControls({ controlsRef }: { controlsRef: React.MutableRefObje
   )
 }
 
-export function SolarSystemScene() {
+function SolarSystemSceneInner() {
   const controlsRef = useRef<any>(null)
+  const { setSelectedDeepObjectId, setSelectedClusterId, setSelected2mrsId } = useSimulation()
 
   return (
-    <SimulationProvider>
-      <div className="w-full h-full bg-black relative">
-        <Canvas
-          camera={{ position: [0, 200, 900], fov: 50, near: 0.1, far: 120000 }}
-          dpr={[1, 1.5]}
-          gl={{ antialias: true, powerPreference: "high-performance" }}
-        >
-          <SimulationClock />
-          <CameraDistanceTracker />
-          <SceneController controlsRef={controlsRef} />
-          <Suspense fallback={null}>
-            <color attach="background" args={["#05070c"]} />
-            <fog attach="fog" args={["#05070c", 12000, 90000]} />
-            <ambientLight intensity={0.2} />
-            <mesh>
-              <sphereGeometry args={[70000, 32, 32]} />
-              <meshBasicMaterial color="#05070c" side={THREE.BackSide} />
-            </mesh>
+    <div className="w-full h-full bg-black relative">
+      <Canvas
+        camera={{ position: [0, 200, 900], fov: 50, near: 0.1, far: 120000 }}
+        dpr={[1, 1.5]}
+        gl={{ antialias: true, powerPreference: "high-performance" }}
+        onPointerMissed={() => {
+          setSelectedDeepObjectId(null)
+          setSelectedClusterId(null)
+          setSelected2mrsId(null)
+        }}
+      >
+        <SimulationClock />
+        <CameraDistanceTracker />
+        <SceneController controlsRef={controlsRef} />
+        <Suspense fallback={null}>
+          <color attach="background" args={["#05070c"]} />
+          <fog attach="fog" args={["#05070c", 12000, 90000]} />
+          <ambientLight intensity={0.2} />
+          <mesh>
+            <sphereGeometry args={[70000, 32, 32]} />
+            <meshBasicMaterial color="#05070c" side={THREE.BackSide} />
+          </mesh>
 
-            <SceneBodies />
-            <SceneOrbitControls controlsRef={controlsRef} />
-          </Suspense>
-        </Canvas>
-        
-        {/* Overlay UI */}
-        <div className="absolute top-16 left-4 text-white pointer-events-none">
-          <h1 className="text-xl md:text-2xl font-bold">Solar System Simulation</h1>
-          <p className="text-sm opacity-70 hidden md:block">
-            Use mouse to rotate, scroll to zoom.
-          </p>
-        </div>
-
-        {/* Controls */}
-        <SimulationControls />
-        <PlanetDetailsPanel />
-        <PlanetTooltip />
-        <PlanetLabelLayer />
-        <ScaleHud />
+          <SceneBodies />
+          <SceneOrbitControls controlsRef={controlsRef} />
+        </Suspense>
+      </Canvas>
+      
+      {/* Overlay UI */}
+      <div className="absolute top-16 left-4 text-white pointer-events-none">
+        <h1 className="text-xl md:text-2xl font-bold">Solar System Simulation</h1>
+        <p className="text-sm opacity-70 hidden md:block">
+          Use mouse to rotate, scroll to zoom.
+        </p>
       </div>
+
+      {/* Controls */}
+      <SimulationControls />
+      <PlanetDetailsPanel />
+      <NGCDetailsPanel />
+      <AbellDetailsPanel />
+      <TwoMRSDetailsPanel />
+      <PlanetTooltip />
+      <PlanetLabelLayer />
+      <ScaleHud />
+    </div>
+  )
+}
+
+export function SolarSystemScene() {
+  return (
+    <SimulationProvider>
+      <SolarSystemSceneInner />
     </SimulationProvider>
   )
 }

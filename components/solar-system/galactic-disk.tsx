@@ -40,6 +40,7 @@ export function GalacticDisk() {
   const { viewDistanceAu, performanceMode } = useSimulation()
   const viewLy = viewDistanceAu / AU_PER_LY
   const showThresholdLy = 80_000
+  const fade = Math.min(1, Math.max(0, (viewLy - showThresholdLy) / 60_000))
 
   const { disk, haloRadius } = useMemo(() => {
     if (viewLy < showThresholdLy) {
@@ -61,14 +62,14 @@ export function GalacticDisk() {
   return (
     <group rotation={[Math.PI / 2, 0, 0]}>
       <points geometry={disk}>
-        <pointsMaterial
-          vertexColors
-          size={0.8}
-          opacity={0.28}
-          transparent
-          depthWrite={false}
-        />
-      </points>
+      <pointsMaterial
+        vertexColors
+        size={0.8}
+        opacity={0.18 + fade * 0.2}
+        transparent
+        depthWrite={false}
+      />
+    </points>
       <mesh>
         <ringGeometry args={[haloRadius * 0.2, haloRadius, 120]} />
         <meshBasicMaterial color="#60a5fa" opacity={0.05} transparent side={THREE.DoubleSide} />

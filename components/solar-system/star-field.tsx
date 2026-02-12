@@ -13,7 +13,7 @@ function seededRandom(seed: number) {
 }
 
 export function StarField() {
-  const { showStars, starDensity, starBrightness, starSize, performanceStars } = useSimulation()
+  const { showStars, starDensity, starBrightness, starSize, performanceStars, viewDistanceAu } = useSimulation()
 
   const geometry = useMemo(() => {
     const radius = 5000
@@ -22,7 +22,11 @@ export function StarField() {
       typeof window !== "undefined" && window.devicePixelRatio
         ? window.devicePixelRatio
         : 1
-    const effectiveDensity = performanceStars ? Math.min(starDensity, 6000) : starDensity
+    const distanceBoost =
+      viewDistanceAu > 100_000 ? 1.8 : viewDistanceAu > 10_000 ? 1.4 : 1
+    const effectiveDensity = performanceStars
+      ? Math.min(starDensity, 6000)
+      : Math.round(starDensity * distanceBoost)
     const count = Math.max(1000, Math.round(effectiveDensity / Math.max(1, dpr)))
     const rand = seededRandom(1337)
     const positions = new Float32Array(count * 3)
@@ -49,7 +53,7 @@ export function StarField() {
     buffer.setAttribute("position", new THREE.BufferAttribute(positions, 3))
     buffer.setAttribute("color", new THREE.BufferAttribute(colors, 3))
     return buffer
-  }, [starDensity])
+  }, [starDensity, performanceStars, viewDistanceAu])
 
   if (!showStars) return null
 

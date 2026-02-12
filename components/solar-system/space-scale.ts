@@ -25,6 +25,11 @@ export function mapLyToScene(ly: number) {
   return mapAuToScene(ly * AU_PER_LY)
 }
 
+export function mapSignedLyToScene(ly: number) {
+  const sign = Math.sign(ly) || 1
+  return sign * mapLyToScene(Math.abs(ly))
+}
+
 export function mapCameraDistanceToAu(distance: number) {
   const t = clamp((distance - MIN_CAMERA_DISTANCE) / (MAX_CAMERA_DISTANCE - MIN_CAMERA_DISTANCE), 0, 1)
   return Math.pow(10, t * CAMERA_EXPONENT)
