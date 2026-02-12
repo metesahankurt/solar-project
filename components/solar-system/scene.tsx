@@ -1,7 +1,7 @@
 "use client"
 
 import React, { Suspense } from "react"
-import { Canvas, useFrame } from "@react-three/fiber"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls } from "@react-three/drei"
 import { dwarfPlanets, planets } from "@/data/planets"
 import { Sun } from "./sun"
@@ -21,6 +21,7 @@ import { PlanetDetailsPanel } from "./planet-details-panel"
 import { PlanetTooltip } from "./planet-tooltip"
 import { PlanetLabelLayer } from "./label-layer"
 import { StarField } from "./star-field"
+import { ScaleHud } from "./scale-hud"
 import { useRef } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -28,6 +29,14 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Settings2 } from "lucide-react"
 import { AU_METERS, SCENE_AU } from "@/lib/astronomy"
+import { CAMERA_DISTANCE_RANGE, mapCameraDistanceToAu } from "./space-scale"
+import { KuiperBelt } from "./kuiper-belt"
+import { Heliosphere } from "./heliosphere"
+import { OortCloud } from "./oort-cloud"
+import { GalacticDisk } from "./galactic-disk"
+import { LocalGroup } from "./local-group"
+import { Laniakea } from "./laniakea"
+import { ObservableUniverse } from "./observable-universe"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -488,6 +497,23 @@ function SimulationClock() {
   return null
 }
 
+function CameraDistanceTracker() {
+  const { camera } = useThree()
+  const { setViewDistanceAu } = useSimulation()
+  const lastReported = React.useRef(0)
+
+  useFrame(() => {
+    const distance = camera.position.length()
+    const viewAu = mapCameraDistanceToAu(distance)
+    if (Math.abs(viewAu - lastReported.current) > viewAu * 0.03) {
+      lastReported.current = viewAu
+      setViewDistanceAu(viewAu)
+    }
+  })
+
+  return null
+}
+
 function SceneBodies() {
   const { showPluto, showMoon } = useSimulation()
   const pluto = dwarfPlanets[0]
@@ -501,6 +527,13 @@ function SceneBodies() {
       {showPluto && pluto && <Planet key={pluto.name} planet={pluto} />}
       {showMoon && <Moon />}
       <AsteroidBelt />
+      <KuiperBelt />
+      <Heliosphere />
+      <OortCloud />
+      <GalacticDisk />
+      <LocalGroup />
+      <Laniakea />
+      <ObservableUniverse />
       <StarField />
     </>
   )
@@ -553,8 +586,8 @@ function SceneOrbitControls({ controlsRef }: { controlsRef: React.MutableRefObje
       enableRotate={!showControlsPanel}
       enableDamping={true}
       dampingFactor={0.08}
-      minDistance={40}
-      maxDistance={9000}
+      minDistance={CAMERA_DISTANCE_RANGE.min}
+      maxDistance={CAMERA_DISTANCE_RANGE.max}
       target={[0, 0, 0]}
       onStart={() => setIsInteracting(true)}
       onEnd={() => setIsInteracting(false)}
@@ -569,18 +602,19 @@ export function SolarSystemScene() {
     <SimulationProvider>
       <div className="w-full h-full bg-black relative">
         <Canvas
-          camera={{ position: [0, 200, 900], fov: 50, near: 0.1, far: 10000 }}
+          camera={{ position: [0, 200, 900], fov: 50, near: 0.1, far: 120000 }}
           dpr={[1, 1.5]}
           gl={{ antialias: true, powerPreference: "high-performance" }}
         >
           <SimulationClock />
+          <CameraDistanceTracker />
           <SceneController controlsRef={controlsRef} />
           <Suspense fallback={null}>
             <color attach="background" args={["#05070c"]} />
-            <fog attach="fog" args={["#05070c", 5000, 30000]} />
+            <fog attach="fog" args={["#05070c", 12000, 90000]} />
             <ambientLight intensity={0.2} />
             <mesh>
-              <sphereGeometry args={[6000, 32, 32]} />
+              <sphereGeometry args={[70000, 32, 32]} />
               <meshBasicMaterial color="#05070c" side={THREE.BackSide} />
             </mesh>
 
@@ -602,6 +636,7 @@ export function SolarSystemScene() {
         <PlanetDetailsPanel />
         <PlanetTooltip />
         <PlanetLabelLayer />
+        <ScaleHud />
       </div>
     </SimulationProvider>
   )

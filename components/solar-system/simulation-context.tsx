@@ -101,6 +101,8 @@ interface SimulationContextType {
   resetDefaults: () => void
   labelPositions: Record<string, LabelInfo>
   setLabelPosition: (info: LabelInfo) => void
+  viewDistanceAu: number
+  setViewDistanceAu: (viewDistanceAu: number) => void
 }
 
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined)
@@ -133,6 +135,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const [performanceStars, setPerformanceStars] = useState(DEFAULT_SETTINGS.performanceStars)
   const [performanceMode, setPerformanceMode] = useState(DEFAULT_SETTINGS.performanceMode)
   const [isInteracting, setIsInteracting] = useState(false)
+  const [viewDistanceAu, setViewDistanceAu] = useState(1)
   const resetDefaults = () => {
     setShowAsteroids(DEFAULT_SETTINGS.showAsteroids)
     setShowPluto(DEFAULT_SETTINGS.showPluto)
@@ -258,6 +261,8 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
           labelPositionsRef.current = { ...labelPositionsRef.current, [info.name]: info }
           setLabelPositions(labelPositionsRef.current)
         },
+        viewDistanceAu,
+        setViewDistanceAu,
       }}
     >
       {children}
