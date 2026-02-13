@@ -2,6 +2,7 @@
 
 import React from "react"
 import { useSimulation } from "./simulation-context"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { AU_PER_LY } from "./space-scale"
 import { Badge } from "@/components/ui/badge"
 
@@ -16,8 +17,11 @@ function formatScale(viewDistanceAu: number) {
 }
 
 export function ScaleHud() {
-  const { viewDistanceAu } = useSimulation()
+  const { viewDistanceAu, showControlsPanel } = useSimulation()
+  const isMobile = useIsMobile()
   const viewLy = viewDistanceAu / AU_PER_LY
+
+  if (!isMobile && showControlsPanel) return null
 
   const layers = [
     { name: "Kuiper Belt", active: viewDistanceAu >= 20 },

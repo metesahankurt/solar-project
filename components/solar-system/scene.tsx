@@ -611,7 +611,7 @@ function SolarSystemSceneInner() {
   const { setSelectedDeepObjectId, setSelectedClusterId, setSelected2mrsId } = useSimulation()
 
   return (
-    <div className="w-full h-full bg-black relative">
+    <div className="w-full h-full bg-black relative touch-none">
       <Canvas
         camera={{ position: [0, 200, 900], fov: 50, near: 0.1, far: 120000 }}
         dpr={[1, 1.5]}
