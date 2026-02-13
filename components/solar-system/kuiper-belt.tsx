@@ -7,18 +7,18 @@ import { mapAuToScene } from "./space-scale"
 import kuiperData from "@/data/kuiper_mpc.json"
 
 type KuiperData = {
-  belt: Array<{ pos: [number, number, number]; a: number; e: number; i: number }>
-  scattered: Array<{ pos: [number, number, number]; a: number; e: number; i: number }>
-  detached: Array<{ pos: [number, number, number]; a: number; e: number; i: number }>
+  belt: Array<{ pos: number[]; a: number; e: number; i: number }>
+  scattered: Array<{ pos: number[]; a: number; e: number; i: number }>
+  detached: Array<{ pos: number[]; a: number; e: number; i: number }>
 }
 
-type KuiperItem = { pos: [number, number, number]; a: number; e: number; i: number }
+type KuiperItem = { pos: number[]; a: number; e: number; i: number }
 
 function buildGeometry(items: KuiperItem[]) {
   const positions = new Float32Array(items.length * 3)
   const colors = new Float32Array(items.length * 3)
   items.forEach((item, index) => {
-    const [x, y, z] = item.pos
+    const [x = 0, y = 0, z = 0] = item.pos
     positions[index * 3] = mapAuToScene(x)
     positions[index * 3 + 1] = mapAuToScene(y)
     positions[index * 3 + 2] = mapAuToScene(z)
