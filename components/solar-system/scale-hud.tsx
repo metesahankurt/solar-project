@@ -28,6 +28,7 @@ export function ScaleHud() {
     { name: "2MRS Galaxies", active: viewLy >= 500_000 },
     { name: "Density Field", active: viewLy >= 700_000 },
     { name: "Cosmic Web", active: viewLy >= 1_000_000 },
+    { name: "SDSS Local Modes", active: viewLy >= 1_500_000 },
     { name: "Abell Clusters", active: viewLy >= 2_000_000 },
     { name: "Observable Universe", active: viewLy >= 5_000_000_000 },
   ]

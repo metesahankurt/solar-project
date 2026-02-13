@@ -29,19 +29,33 @@ function buildCloud(count: number, innerAu: number, outerAu: number) {
 export function OortCloud() {
   const { viewDistanceAu, performanceMode } = useSimulation()
 
-  const geometry = useMemo(() => {
+  const { inner, outer } = useMemo(() => {
     if (viewDistanceAu < 1000) {
-      return new THREE.BufferGeometry()
+      return {
+        inner: new THREE.BufferGeometry(),
+        outer: new THREE.BufferGeometry(),
+      }
     }
-    const count = performanceMode ? 900 : 2400
-    return buildCloud(count, 2000, 100000)
+    const innerCount = performanceMode ? 800 : 1800
+    const outerCount = performanceMode ? 500 : 1400
+    return {
+      inner: buildCloud(innerCount, 2000, 20000),
+      outer: buildCloud(outerCount, 20000, 100000),
+    }
   }, [performanceMode, viewDistanceAu])
 
   if (viewDistanceAu < 1000) return null
 
+  const fade = Math.min(1, Math.max(0, (viewDistanceAu - 1000) / 3000))
+
   return (
-    <points geometry={geometry}>
-      <pointsMaterial size={0.6} color="#94a3b8" opacity={0.22} transparent />
-    </points>
+    <group>
+      <points geometry={inner}>
+        <pointsMaterial size={0.6} color="#94a3b8" opacity={0.25 + fade * 0.2} transparent />
+      </points>
+      <points geometry={outer}>
+        <pointsMaterial size={0.55} color="#7f8ea3" opacity={0.18 + fade * 0.12} transparent />
+      </points>
+    </group>
   )
 }

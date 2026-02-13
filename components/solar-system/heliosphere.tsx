@@ -10,11 +10,12 @@ export function Heliosphere() {
 
   if (viewDistanceAu < 150) return null
 
-  const heliopause = mapAuToScene(122)
   const terminationShock = mapAuToScene(90)
+  const heliopause = mapAuToScene(122)
+  const bowWave = mapAuToScene(140)
 
   return (
-    <group>
+    <group scale={[1.08, 0.95, 1]}>
       <mesh>
         <sphereGeometry args={[terminationShock, 48, 48]} />
         <meshBasicMaterial
@@ -30,6 +31,16 @@ export function Heliosphere() {
         <meshBasicMaterial
           color="#38bdf8"
           opacity={0.06}
+          transparent
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh>
+        <sphereGeometry args={[bowWave, 64, 64]} />
+        <meshBasicMaterial
+          color="#bae6fd"
+          opacity={0.03}
           transparent
           side={THREE.DoubleSide}
           depthWrite={false}

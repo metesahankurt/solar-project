@@ -124,7 +124,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   const [useRealTime, setUseRealTime] = useState(true)
   const simTimeMsRef = React.useRef(Date.now())
   const [showLabels, setShowLabels] = useState(false)
-  const [showOrbits, setShowOrbits] = useState(false)
+  const [showOrbits, setShowOrbits] = useState(DEFAULT_SETTINGS.showOrbits)
   const [showAsteroids, setShowAsteroids] = useState(DEFAULT_SETTINGS.showAsteroids)
   const [showPluto, setShowPluto] = useState(DEFAULT_SETTINGS.showPluto)
   const [showMoon, setShowMoon] = useState(DEFAULT_SETTINGS.showMoon)

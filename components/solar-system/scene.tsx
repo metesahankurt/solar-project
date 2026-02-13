@@ -43,6 +43,7 @@ import { TwoMRSLayer } from "./twomrs-layer"
 import { TwoMRSDetailsPanel } from "./twomrs-details-panel"
 import { CosmicWeb } from "./cosmic-web"
 import { DensityField } from "./density-field"
+import { SDSSLocalModes } from "./sdss-local-modes"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -541,6 +542,7 @@ function SceneBodies() {
       <TwoMRSLayer />
       <DensityField />
       <CosmicWeb />
+      <SDSSLocalModes />
       <AbellLayer />
       <ObservableUniverse />
       <StarField />
