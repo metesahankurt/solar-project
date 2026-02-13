@@ -24,6 +24,8 @@ function formatScientific(value: number) {
 export function PlanetDetailsPanel() {
   const { selectedPlanet, liveMetrics } = useSimulation()
   const isMobile = useIsMobile()
+  const parent = (selectedPlanet as any).parent as string | undefined
+  const isMoon = Boolean(parent)
   const distanceKm = selectedPlanet.semiMajorAxis / 1000
   const distanceAu = selectedPlanet.semiMajorAxis / AU_METERS
   const orbitalDays = selectedPlanet.orbitalPeriod / (24 * 60 * 60)
@@ -103,15 +105,15 @@ export function PlanetDetailsPanel() {
                 <span className="text-muted-foreground">Semi-major axis</span>
                 <span>{formatNumber(distanceKm)} km</span>
               </div>
-              {selectedPlanet.name !== "Moon" ? (
+              {isMoon ? (
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Distance (AU)</span>
-                  <span>{formatNumber(distanceAu, 3)} AU</span>
+                  <span className="text-muted-foreground">Parent</span>
+                  <span>{parent}</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Distance (Earth)</span>
-                  <span>{formatNumber(distanceKm)} km</span>
+                  <span className="text-muted-foreground">Distance (AU)</span>
+                  <span>{formatNumber(distanceAu, 3)} AU</span>
                 </div>
               )}
               <div className="flex items-center justify-between">

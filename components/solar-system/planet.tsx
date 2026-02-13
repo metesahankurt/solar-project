@@ -16,6 +16,8 @@ import {
   PlanetOrbitalPeriod,
   Vector,
 } from "astronomy-engine"
+import { PlanetRings } from "./planet-rings"
+import { PlanetMoons } from "./planet-moons"
 
 interface PlanetProps {
   planet: PlanetType
@@ -195,12 +197,12 @@ export function Planet({ planet }: PlanetProps) {
           }}
         >
           <sphereGeometry args={[visualRadius, 32, 32]} />
-          <meshStandardMaterial
-            color={planet.color}
-            emissive={isSelected ? planet.color : "#000000"}
-            emissiveIntensity={isSelected ? 0.5 : 0}
-          />
-        </mesh>
+        <meshStandardMaterial
+          color={planet.color}
+          emissive={isSelected ? planet.color : "#000000"}
+          emissiveIntensity={isSelected ? 0.5 : 0}
+        />
+      </mesh>
         <mesh>
           <sphereGeometry args={[visualRadius * 1.35, 24, 24]} />
           <meshBasicMaterial
@@ -211,17 +213,8 @@ export function Planet({ planet }: PlanetProps) {
           />
         </mesh>
 
-        {planet.name === "Saturn" && (
-          <mesh rotation={[Math.PI / 2.2, 0, 0]}>
-            <ringGeometry args={[visualRadius * 1.4, visualRadius * 2.3, 64]} />
-            <meshStandardMaterial
-              color="#d6c59a"
-              opacity={0.6}
-              transparent
-              side={THREE.DoubleSide}
-            />
-          </mesh>
-        )}
+        <PlanetRings planetName={planet.name} visualRadiusKm={planet.radius} />
+        <PlanetMoons planet={planet} />
 
       </group>
     </group>

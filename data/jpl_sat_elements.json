@@ -1,0 +1,212 @@
+{
+  "Phobos": {
+    "planet": "Mars",
+    "a_km": 9375.0,
+    "e": 0.015,
+    "w_deg": 216.3,
+    "M_deg": 189.7,
+    "i_deg": 1.1,
+    "node_deg": 169.2,
+    "period_days": 0.3187
+  },
+  "Deimos": {
+    "planet": "Mars",
+    "a_km": 23457.0,
+    "e": 0.0,
+    "w_deg": 0.0,
+    "M_deg": 205.0,
+    "i_deg": 1.8,
+    "node_deg": 54.3,
+    "period_days": 1.2625
+  },
+  "Io": {
+    "planet": "Jupiter",
+    "a_km": 421800.0,
+    "e": 0.004,
+    "w_deg": 49.1,
+    "M_deg": 330.9,
+    "i_deg": 0.0,
+    "node_deg": 0.0,
+    "period_days": 1.762732
+  },
+  "Europa": {
+    "planet": "Jupiter",
+    "a_km": 671100.0,
+    "e": 0.009,
+    "w_deg": 45.0,
+    "M_deg": 345.4,
+    "i_deg": 0.5,
+    "node_deg": 184.0,
+    "period_days": 3.525463
+  },
+  "Ganymede": {
+    "planet": "Jupiter",
+    "a_km": 1070400.0,
+    "e": 0.001,
+    "w_deg": 198.3,
+    "M_deg": 324.8,
+    "i_deg": 0.2,
+    "node_deg": 58.5,
+    "period_days": 7.155588
+  },
+  "Callisto": {
+    "planet": "Jupiter",
+    "a_km": 1882700.0,
+    "e": 0.007,
+    "w_deg": 43.8,
+    "M_deg": 87.4,
+    "i_deg": 0.3,
+    "node_deg": 309.1,
+    "period_days": 16.69044
+  },
+  "Mimas": {
+    "planet": "Saturn",
+    "a_km": 186000.0,
+    "e": 0.02,
+    "w_deg": 160.4,
+    "M_deg": 275.3,
+    "i_deg": 1.6,
+    "node_deg": 66.2,
+    "period_days": 0.942422
+  },
+  "Enceladus": {
+    "planet": "Saturn",
+    "a_km": 238400.0,
+    "e": 0.005,
+    "w_deg": 119.5,
+    "M_deg": 57.0,
+    "i_deg": 0.0,
+    "node_deg": 0.0,
+    "period_days": 1.370218
+  },
+  "Tethys": {
+    "planet": "Saturn",
+    "a_km": 295000.0,
+    "e": 0.001,
+    "w_deg": 335.3,
+    "M_deg": 0.0,
+    "i_deg": 1.1,
+    "node_deg": 273.0,
+    "period_days": 1.887802
+  },
+  "Dione": {
+    "planet": "Saturn",
+    "a_km": 377700.0,
+    "e": 0.002,
+    "w_deg": 116.0,
+    "M_deg": 212.0,
+    "i_deg": 0.0,
+    "node_deg": 0.0,
+    "period_days": 2.736916
+  },
+  "Rhea": {
+    "planet": "Saturn",
+    "a_km": 527200.0,
+    "e": 0.001,
+    "w_deg": 44.3,
+    "M_deg": 31.5,
+    "i_deg": 0.3,
+    "node_deg": 133.7,
+    "period_days": 4.517503
+  },
+  "Titan": {
+    "planet": "Saturn",
+    "a_km": 1221900.0,
+    "e": 0.029,
+    "w_deg": 78.3,
+    "M_deg": 11.7,
+    "i_deg": 0.3,
+    "node_deg": 78.6,
+    "period_days": 15.945448
+  },
+  "Iapetus": {
+    "planet": "Saturn",
+    "a_km": 3561700.0,
+    "e": 0.028,
+    "w_deg": 254.5,
+    "M_deg": 74.8,
+    "i_deg": 7.6,
+    "node_deg": 86.5,
+    "period_days": 79.331002
+  },
+  "Ariel": {
+    "planet": "Uranus",
+    "a_km": 190929.0,
+    "e": 0.001,
+    "w_deg": 9.6,
+    "M_deg": 193.5,
+    "i_deg": 0.0,
+    "node_deg": 0.0,
+    "period_days": 2.520379
+  },
+  "Umbriel": {
+    "planet": "Uranus",
+    "a_km": 265986.0,
+    "e": 0.004,
+    "w_deg": 183.4,
+    "M_deg": 253.0,
+    "i_deg": 0.1,
+    "node_deg": 174.8,
+    "period_days": 4.144177
+  },
+  "Titania": {
+    "planet": "Uranus",
+    "a_km": 436298.0,
+    "e": 0.002,
+    "w_deg": 184.0,
+    "M_deg": 68.1,
+    "i_deg": 0.1,
+    "node_deg": 29.5,
+    "period_days": 8.705869
+  },
+  "Oberon": {
+    "planet": "Uranus",
+    "a_km": 583511.0,
+    "e": 0.002,
+    "w_deg": 132.2,
+    "M_deg": 143.6,
+    "i_deg": 0.1,
+    "node_deg": 76.8,
+    "period_days": 13.463237
+  },
+  "Miranda": {
+    "planet": "Uranus",
+    "a_km": 129846.0,
+    "e": 0.001,
+    "w_deg": 154.8,
+    "M_deg": 73.0,
+    "i_deg": 4.4,
+    "node_deg": 100.9,
+    "period_days": 1.413479
+  },
+  "Triton": {
+    "planet": "Neptune",
+    "a_km": 354800.0,
+    "e": 0.0,
+    "w_deg": 0.0,
+    "M_deg": 63.0,
+    "i_deg": 157.3,
+    "node_deg": 178.1,
+    "period_days": 5.876994
+  },
+  "Proteus": {
+    "planet": "Neptune",
+    "a_km": 117600.0,
+    "e": 0.0,
+    "w_deg": 0.0,
+    "M_deg": 276.8,
+    "i_deg": 0.0,
+    "node_deg": 0.0,
+    "period_days": 1.122315
+  },
+  "Nereid": {
+    "planet": "Neptune",
+    "a_km": 5513900.0,
+    "e": 0.751,
+    "w_deg": 296.8,
+    "M_deg": 318.5,
+    "i_deg": 5.1,
+    "node_deg": 319.5,
+    "period_days": 360.133039
+  }
+}

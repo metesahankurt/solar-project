@@ -3,15 +3,20 @@
 import React from "react"
 import { useSimulation } from "./simulation-context"
 import { Card } from "@/components/ui/card"
-import { planets } from "@/data/planets"
+import { planets, moonData } from "@/data/planets"
+import { moons } from "@/data/moons"
 
 export function PlanetTooltip() {
   const { hoveredPlanet, liveMetrics } = useSimulation()
 
   if (!hoveredPlanet) return null
 
-  const planet = planets.find((item) => item.name === hoveredPlanet.name)
+  const planet =
+    planets.find((item) => item.name === hoveredPlanet.name) ||
+    moons.find((item) => item.name === hoveredPlanet.name) ||
+    (hoveredPlanet.name === moonData.name ? moonData : null)
   if (!planet) return null
+  const parent = (planet as any).parent as string | undefined
 
   const metrics = liveMetrics[hoveredPlanet.name]
   const angleDeg = metrics ? (metrics.angle * 180) / Math.PI : null
@@ -27,6 +32,7 @@ export function PlanetTooltip() {
       <Card className="border-border/60 bg-background/90 px-3 py-2 text-xs shadow-sm backdrop-blur">
         <div className="font-semibold">{planet.name}</div>
         <div className="text-muted-foreground">{planet.description}</div>
+        {parent && <div className="text-muted-foreground">Moon of {parent}</div>}
         {metrics && (
           <div className="mt-2 space-y-1 text-muted-foreground">
             <div>Angle: {angleDeg?.toFixed(1)}°</div>
