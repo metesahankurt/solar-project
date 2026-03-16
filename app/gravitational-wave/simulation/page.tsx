@@ -44,7 +44,7 @@ export default function GravitationalWaveSimulationPage() {
   }, [])
 
   return (
-    <div className="flex h-svh max-h-svh w-full overflow-hidden bg-black text-white">
+    <div className="flex flex-col md:flex-row h-svh max-h-svh w-full overflow-hidden bg-black text-white">
       <div className="relative flex-1">
         <GravitationalWaveScene
           event={selectedEvent}
@@ -59,7 +59,7 @@ export default function GravitationalWaveSimulationPage() {
         </div>
       </div>
 
-      <div className="flex h-full w-80 shrink-0 flex-col border-l border-white/10 bg-black/90">
+      <div className="flex h-1/2 md:h-full w-full md:w-80 shrink-0 flex-col border-t md:border-t-0 md:border-l border-white/10 bg-black/90">
         <div className="flex border-b border-white/10">
           {(["controls", "physics"] as const).map((panel) => (
             <button

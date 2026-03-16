@@ -48,7 +48,7 @@ export function GravitationalWaveLab() {
   const selectedEvent = GW_EVENTS.find((event) => event.id === selectedEventId) ?? GW_EVENTS[0]
 
   return (
-    <div className="container mx-auto space-y-10 py-8">
+    <div className="container mx-auto px-4 md:px-8 space-y-10 py-8">
       <section className="relative overflow-hidden rounded-[2rem] border border-emerald-500/20 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.18),_transparent_38%),radial-gradient(circle_at_top_right,_rgba(250,204,21,0.16),_transparent_34%),linear-gradient(180deg,_rgba(3,7,18,0.94),_rgba(5,10,20,0.98))] px-6 py-10 text-white shadow-2xl shadow-emerald-950/20 sm:px-10">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(52,211,153,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(52,211,153,0.08)_1px,transparent_1px)] bg-[size:36px_36px] opacity-40" />
         <div className="relative grid gap-8 lg:grid-cols-[1.25fr_0.85fr] lg:items-end">

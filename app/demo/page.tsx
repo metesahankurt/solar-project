@@ -71,7 +71,7 @@ export default function DemoPage() {
   ]
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-24 gap-8 bg-muted/20">
+    <div className="flex min-h-screen flex-col items-center justify-center p-6 md:p-24 gap-8 bg-muted/20">
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-4xl font-bold tracking-tight">Shadcn UI Demo</h1>
         <p className="text-muted-foreground">

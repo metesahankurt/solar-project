@@ -223,7 +223,7 @@ export default function BlackHoleSimulationPage() {
 
       {/* Floating controls panel (top-right) */}
       {showControls && (
-        <div className="absolute top-3 right-3 w-72 max-h-[calc(100svh-1.5rem)] flex flex-col rounded-xl border border-white/10 bg-background/90 backdrop-blur shadow-xl overflow-hidden">
+        <div className="absolute top-3 left-3 right-3 sm:left-auto sm:w-72 max-h-[calc(100svh-1.5rem)] flex flex-col rounded-xl border border-white/10 bg-background/90 backdrop-blur shadow-xl overflow-hidden">
           {/* Panel header */}
           <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/10 shrink-0">
             <span className="text-sm font-semibold">Simulation Controls</span>

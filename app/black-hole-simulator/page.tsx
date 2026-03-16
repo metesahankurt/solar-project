@@ -165,7 +165,7 @@ const KEY_RADII = [
 
 export default function BlackHoleSimulatorPage() {
   return (
-    <div className="container mx-auto py-8 space-y-10">
+    <div className="container mx-auto px-4 md:px-8 py-8 space-y-10">
 
       {/* Header */}
       <div className="flex flex-col gap-4">

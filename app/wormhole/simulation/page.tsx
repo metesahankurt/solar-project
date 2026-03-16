@@ -118,7 +118,7 @@ export default function WormholeSimulationPage() {
   }, [])
 
   return (
-    <div className="flex h-svh max-h-svh w-full overflow-hidden bg-black text-white">
+    <div className="flex flex-col md:flex-row h-svh max-h-svh w-full overflow-hidden bg-black text-white">
       {/* ── 3D Canvas ── */}
       <div className="flex-1 relative">
         {loading && (
@@ -160,7 +160,7 @@ export default function WormholeSimulationPage() {
       </div>
 
       {/* ── Side Panel ── */}
-      <div className="flex h-full w-72 shrink-0 flex-col border-l border-white/10 bg-black/90">
+      <div className="flex h-1/2 md:h-full w-full md:w-72 shrink-0 flex-col border-t md:border-t-0 md:border-l border-white/10 bg-black/90">
         {/* Tab bar */}
         <div className="flex border-b border-white/10">
           {(["controls", "data"] as const).map((panel) => (

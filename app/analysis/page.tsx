@@ -3,7 +3,7 @@ import { MathDisplay } from "@/components/ui/math-display";
 
 export default function AnalysisPage() {
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="container mx-auto px-4 md:px-8 py-8 space-y-8">
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-bold tracking-tight">Kepler Analysis</h1>
         <p className="text-xl text-muted-foreground">
