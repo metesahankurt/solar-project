@@ -189,7 +189,7 @@ export default function BlackHoleSimulationPage() {
       />
 
       {/* Top-left info badges */}
-      <div className="absolute top-3 left-3 flex items-center gap-2 pointer-events-none">
+      <div className="absolute top-3 left-14 flex flex-wrap items-center gap-2 pointer-events-none sm:left-3">
         <Badge variant="outline" className="bg-black/60 text-white border-white/20 font-mono text-[11px]">
           {params.massInSolarMasses < 1e4
             ? `${params.massInSolarMasses.toFixed(0)} M☉`
@@ -223,7 +223,9 @@ export default function BlackHoleSimulationPage() {
 
       {/* Floating controls panel */}
       {showControls && (
-        <div className="dark absolute bottom-3 left-3 right-3 top-14 flex max-h-[calc(100svh-4.25rem)] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-neutral-950/82 text-white shadow-2xl backdrop-blur-xl sm:bottom-auto sm:left-auto sm:top-3 sm:right-3 sm:max-h-[calc(100svh-1.5rem)] sm:w-[360px]">
+        <div className="dark absolute bottom-0 left-0 right-0 top-[50svh] flex flex-col overflow-hidden rounded-t-[28px] border-t border-white/10 bg-neutral-950/82 text-white shadow-2xl backdrop-blur-xl sm:bottom-3 sm:left-auto sm:right-3 sm:top-3 sm:max-h-[calc(100svh-1.5rem)] sm:w-[360px] sm:rounded-[28px] sm:border">
+          {/* Drag handle (mobile only) */}
+          <div className="mx-auto mt-2.5 mb-0.5 h-1 w-10 shrink-0 rounded-full bg-white/20 sm:hidden" />
           {/* Header */}
           <div className="relative shrink-0 border-b border-white/10 bg-gradient-to-b from-white/[0.08] to-transparent px-5 py-4">
             <div>
