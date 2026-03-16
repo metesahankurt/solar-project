@@ -7,9 +7,10 @@
 
 "use client"
 
-import React, { useState, useEffect, useCallback, useLayoutEffect } from "react"
+import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from "react"
 import dynamic from "next/dynamic"
-import { Loader2 } from "lucide-react"
+import { Loader2, SlidersHorizontal, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 import type {
   WormholeSimulationState,
@@ -41,8 +42,8 @@ const WormholeScene = dynamic(
 // ─── Default State ────────────────────────────────────────────────────────────
 
 const DEFAULT_STATE: WormholeSimulationState = {
-  throatRadiusSolar: 3,         // 3 R☉ = ~2,100 km throat
-  mouthSeparationAU: 1,         // 1 AU between mouths
+  throatRadiusSolar: 3,
+  mouthSeparationAU: 1,
   cameraDistance: 22,
   cameraAzimuth: 0,
   cameraElevation: 20,
@@ -66,8 +67,9 @@ export default function WormholeSimulationPage() {
   const [galaxies, setGalaxies] = useState<GalaxyData[]>([])
   const [loading, setLoading] = useState(true)
   const [activePanel, setActivePanel] = useState<"controls" | "data">("controls")
+  const [showControls, setShowControls] = useState(true)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  // Load catalog data on mount
   useEffect(() => {
     let cancelled = false
     async function loadData() {
@@ -117,76 +119,117 @@ export default function WormholeSimulationPage() {
     }
   }, [])
 
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const handler = (e: WheelEvent) => e.stopPropagation()
+    el.addEventListener("wheel", handler, { capture: true, passive: true })
+    return () => el.removeEventListener("wheel", handler, { capture: true })
+  }, [showControls])
+
   return (
-    <div className="flex flex-col md:flex-row h-svh max-h-svh w-full overflow-hidden bg-black text-white">
-      {/* ── 3D Canvas ── */}
-      <div className="flex-1 relative">
-        {loading && (
-          <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/60">
-            <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+    <div className="relative h-svh max-h-svh overflow-hidden w-full bg-black text-white">
+
+      {/* 3D Canvas */}
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center z-10 bg-black/60">
+          <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
+        </div>
+      )}
+      <WormholeScene
+        state={state}
+        stars={stars}
+        galaxies={galaxies}
+        className="w-full h-full"
+      />
+
+      {/* HUD overlay */}
+      <div className="absolute top-3 left-3 text-xs text-white/40 pointer-events-none select-none">
+        <div className="font-mono">Morris–Thorne Wormhole · Ellis Model</div>
+        <div className="font-mono">b₀ = {state.throatRadiusSolar.toFixed(1)} R☉ · L = {state.mouthSeparationAU.toFixed(1)} AU</div>
+      </div>
+
+      {/* Legend */}
+      <div className="absolute bottom-3 left-3 flex flex-col gap-1 pointer-events-none">
+        {[
+          { color: "#00ffcc", label: "Passed through wormhole" },
+          { color: "#4488ff", label: "Deflected by gravity" },
+          { color: "#ff8800", label: "Orbiting at throat" },
+          { color: "#00ccff", label: "Mouth A (region A)" },
+          { color: "#cc88ff", label: "Mouth B (region B)" },
+        ].map(({ color, label }) => (
+          <div key={label} className="flex items-center gap-1.5">
+            <div
+              className="w-3 h-0.5 rounded-full"
+              style={{ backgroundColor: color }}
+            />
+            <span className="text-xs text-white/50">{label}</span>
           </div>
-        )}
-        <WormholeScene
-          state={state}
-          stars={stars}
-          galaxies={galaxies}
-          className="w-full h-full"
-        />
+        ))}
+      </div>
 
-        {/* HUD overlay */}
-        <div className="absolute top-3 left-3 text-xs text-white/40 pointer-events-none select-none">
-          <div className="font-mono">Morris–Thorne Wormhole · Ellis Model</div>
-          <div className="font-mono">b₀ = {state.throatRadiusSolar.toFixed(1)} R☉ · L = {state.mouthSeparationAU.toFixed(1)} AU</div>
-        </div>
+      {/* Toggle button */}
+      {!showControls && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="absolute top-3 right-3 bg-black/60 border-white/20 text-white hover:bg-black/80 hover:text-white"
+          onClick={() => setShowControls(true)}
+        >
+          <SlidersHorizontal className="size-3.5 mr-1.5" />
+          Controls
+        </Button>
+      )}
 
-        {/* Legend */}
-        <div className="absolute bottom-3 left-3 flex flex-col gap-1 pointer-events-none">
-          {[
-            { color: "#00ffcc", label: "Passed through wormhole" },
-            { color: "#4488ff", label: "Deflected by gravity" },
-            { color: "#ff8800", label: "Orbiting at throat" },
-            { color: "#00ccff", label: "Mouth A (region A)" },
-            { color: "#cc88ff", label: "Mouth B (region B)" },
-          ].map(({ color, label }) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <div
-                className="w-3 h-0.5 rounded-full"
-                style={{ backgroundColor: color }}
-              />
-              <span className="text-xs text-white/50">{label}</span>
+      {/* Floating control panel */}
+      {showControls && (
+        <div className="dark absolute bottom-3 left-3 right-3 top-14 flex max-h-[calc(100svh-4.25rem)] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-neutral-950/82 text-white shadow-2xl backdrop-blur-xl sm:bottom-auto sm:left-auto sm:top-3 sm:right-3 sm:max-h-[calc(100svh-1.5rem)] sm:w-[360px]">
+          {/* Header */}
+          <div className="relative shrink-0 border-b border-white/10 bg-gradient-to-b from-white/[0.08] to-transparent px-5 py-4">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-white/45">Control Deck</div>
+              <span className="mt-1 block text-sm font-semibold tracking-tight">Wormhole Parameters</span>
+              <p className="mt-1 text-xs text-white/55">
+                Morris–Thorne model · b₀ = {state.throatRadiusSolar.toFixed(1)} R☉
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Side Panel ── */}
-      <div className="flex h-1/2 md:h-full w-full md:w-72 shrink-0 flex-col border-t md:border-t-0 md:border-l border-white/10 bg-black/90">
-        {/* Tab bar */}
-        <div className="flex border-b border-white/10">
-          {(["controls", "data"] as const).map((panel) => (
-            <button
-              key={panel}
-              onClick={() => setActivePanel(panel)}
-              className={`flex-1 py-2 text-xs font-medium capitalize transition-colors ${
-                activePanel === panel
-                  ? "text-cyan-400 border-b border-cyan-400"
-                  : "text-white/40 hover:text-white/70"
-              }`}
+            <Button
+              size="icon"
+              variant="ghost"
+              className="absolute right-4 top-4 size-8 rounded-full text-white/55 hover:bg-white/10 hover:text-white"
+              onClick={() => setShowControls(false)}
             >
-              {panel === "controls" ? "Controls" : "Physics"}
-            </button>
-          ))}
-        </div>
+              <X className="size-4" />
+            </Button>
+          </div>
 
-        {/* Panel content */}
-        <div className="flex-1 overflow-hidden">
-          {activePanel === "controls" ? (
-            <WormholeControls state={state} onChange={handleChange} />
-          ) : (
-            <DataPanel state={state} />
-          )}
+          {/* Tab bar */}
+          <div className="flex shrink-0 border-b border-white/10">
+            {(["controls", "data"] as const).map((panel) => (
+              <button
+                key={panel}
+                onClick={() => setActivePanel(panel)}
+                className={`flex-1 py-2 text-xs font-medium capitalize transition-colors ${
+                  activePanel === panel
+                    ? "border-b border-cyan-400 text-cyan-400"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+              >
+                {panel === "controls" ? "Controls" : "Physics"}
+              </button>
+            ))}
+          </div>
+
+          {/* Body */}
+          <div ref={scrollRef} className="flex-1 overflow-hidden">
+            {activePanel === "controls" ? (
+              <WormholeControls state={state} onChange={handleChange} />
+            ) : (
+              <DataPanel state={state} />
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

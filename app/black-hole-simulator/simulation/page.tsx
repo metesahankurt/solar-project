@@ -208,7 +208,7 @@ export default function BlackHoleSimulationPage() {
         )}
       </div>
 
-      {/* Toggle button (top-right, visible when panel is hidden) */}
+      {/* Toggle button (visible when panel is hidden) */}
       {!showControls && (
         <Button
           size="sm"
@@ -221,26 +221,35 @@ export default function BlackHoleSimulationPage() {
         </Button>
       )}
 
-      {/* Floating controls panel (top-right) */}
+      {/* Floating controls panel */}
       {showControls && (
-        <div className="absolute top-3 left-3 right-3 sm:left-auto sm:w-72 max-h-[calc(100svh-1.5rem)] flex flex-col rounded-xl border border-white/10 bg-background/90 backdrop-blur shadow-xl overflow-hidden">
-          {/* Panel header */}
-          <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/10 shrink-0">
-            <span className="text-sm font-semibold">Simulation Controls</span>
+        <div className="dark absolute bottom-3 left-3 right-3 top-14 flex max-h-[calc(100svh-4.25rem)] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-neutral-950/82 text-white shadow-2xl backdrop-blur-xl sm:bottom-auto sm:left-auto sm:top-3 sm:right-3 sm:max-h-[calc(100svh-1.5rem)] sm:w-[360px]">
+          {/* Header */}
+          <div className="relative shrink-0 border-b border-white/10 bg-gradient-to-b from-white/[0.08] to-transparent px-5 py-4">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-white/45">Control Deck</div>
+              <span className="mt-1 block text-sm font-semibold tracking-tight">Black Hole Simulation</span>
+              <p className="mt-1 text-xs text-white/55">
+                {params.massInSolarMasses < 1e4
+                  ? `${params.massInSolarMasses.toFixed(0)} M☉`
+                  : `${params.massInSolarMasses.toExponential(1)} M☉`}
+                {" · "}{result.geometry.classification}
+              </p>
+            </div>
             <Button
               size="icon"
               variant="ghost"
-              className="size-6 text-muted-foreground hover:text-foreground"
+              className="absolute right-4 top-4 size-8 rounded-full text-white/55 hover:bg-white/10 hover:text-white"
               onClick={() => setShowControls(false)}
             >
-              <X className="size-3.5" />
+              <X className="size-4" />
             </Button>
           </div>
 
-          {/* Scrollable content — scrollbar hidden */}
+          {/* Scrollable content */}
           <div
             ref={scrollRef}
-            className="flex-1 overflow-y-auto p-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex-1 overflow-y-auto p-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <SimulationControls
               simState={simState}

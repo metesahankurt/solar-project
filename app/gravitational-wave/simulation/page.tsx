@@ -1,7 +1,9 @@
 "use client"
 
-import { useLayoutEffect, useState } from "react"
+import { useLayoutEffect, useEffect, useRef, useState } from "react"
 import dynamic from "next/dynamic"
+import { SlidersHorizontal, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 import { GravitationalWaveControls } from "@/components/gravitational-wave-simulator/gravitational-wave-controls"
 import { GravitationalWaveDataPanel } from "@/components/gravitational-wave-simulator/gravitational-wave-data-panel"
@@ -20,6 +22,8 @@ export default function GravitationalWaveSimulationPage() {
   const [massScale, setMassScale] = useState([1])
   const [distanceScale, setDistanceScale] = useState([1])
   const [activePanel, setActivePanel] = useState<"controls" | "physics">("controls")
+  const [showControls, setShowControls] = useState(true)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const selectedEvent = GW_EVENTS.find((event) => event.id === selectedEventId) ?? GW_EVENTS[0]
 
@@ -43,59 +47,105 @@ export default function GravitationalWaveSimulationPage() {
     }
   }, [])
 
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const handler = (e: WheelEvent) => e.stopPropagation()
+    el.addEventListener("wheel", handler, { capture: true, passive: true })
+    return () => el.removeEventListener("wheel", handler, { capture: true })
+  }, [showControls])
+
   return (
-    <div className="flex flex-col md:flex-row h-svh max-h-svh w-full overflow-hidden bg-black text-white">
-      <div className="relative flex-1">
-        <GravitationalWaveScene
-          event={selectedEvent}
-          massScale={massScale[0]}
-          distanceScale={distanceScale[0]}
-          className="h-full w-full rounded-none border-0"
-        />
+    <div className="relative h-svh max-h-svh overflow-hidden w-full bg-black text-white">
 
-        <div className="pointer-events-none absolute top-3 left-3 text-xs text-white/45">
-          <div className="font-mono">Gravitational Wave Simulation</div>
-          <div className="font-mono">{selectedEvent.name} · {selectedEvent.detectors}</div>
-        </div>
+      {/* 3D Canvas */}
+      <GravitationalWaveScene
+        event={selectedEvent}
+        massScale={massScale[0]}
+        distanceScale={distanceScale[0]}
+        className="absolute inset-0 w-full h-full rounded-none border-0"
+      />
+
+      {/* HUD overlay */}
+      <div className="pointer-events-none absolute top-3 left-3 text-xs text-white/45 select-none">
+        <div className="font-mono">Gravitational Wave Simulation</div>
+        <div className="font-mono">{selectedEvent.name} · {selectedEvent.detectors}</div>
       </div>
 
-      <div className="flex h-1/2 md:h-full w-full md:w-80 shrink-0 flex-col border-t md:border-t-0 md:border-l border-white/10 bg-black/90">
-        <div className="flex border-b border-white/10">
-          {(["controls", "physics"] as const).map((panel) => (
-            <button
-              key={panel}
-              onClick={() => setActivePanel(panel)}
-              className={`flex-1 py-2 text-xs font-medium capitalize transition-colors ${
-                activePanel === panel
-                  ? "border-b border-emerald-400 text-emerald-400"
-                  : "text-white/40 hover:text-white/70"
-              }`}
+      {/* Toggle button */}
+      {!showControls && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="absolute top-3 right-3 bg-black/60 border-white/20 text-white hover:bg-black/80 hover:text-white"
+          onClick={() => setShowControls(true)}
+        >
+          <SlidersHorizontal className="size-3.5 mr-1.5" />
+          Controls
+        </Button>
+      )}
+
+      {/* Floating control panel */}
+      {showControls && (
+        <div className="dark absolute bottom-3 left-3 right-3 top-14 flex max-h-[calc(100svh-4.25rem)] flex-col overflow-hidden rounded-[28px] border border-white/10 bg-neutral-950/82 text-white shadow-2xl backdrop-blur-xl sm:bottom-auto sm:left-auto sm:top-3 sm:right-3 sm:max-h-[calc(100svh-1.5rem)] sm:w-[360px]">
+          {/* Header */}
+          <div className="relative shrink-0 border-b border-white/10 bg-gradient-to-b from-white/[0.08] to-transparent px-5 py-4">
+            <div>
+              <div className="text-[11px] uppercase tracking-[0.2em] text-white/45">Control Deck</div>
+              <span className="mt-1 block text-sm font-semibold tracking-tight">Gravitational Waves</span>
+              <p className="mt-1 text-xs text-white/55">
+                {selectedEvent.name} · {selectedEvent.sourceType}
+              </p>
+            </div>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="absolute right-4 top-4 size-8 rounded-full text-white/55 hover:bg-white/10 hover:text-white"
+              onClick={() => setShowControls(false)}
             >
-              {panel === "controls" ? "Controls" : "Physics"}
-            </button>
-          ))}
-        </div>
+              <X className="size-4" />
+            </Button>
+          </div>
 
-        <div className="flex-1 overflow-hidden">
-          {activePanel === "controls" ? (
-            <GravitationalWaveControls
-              selectedEventId={selectedEventId}
-              onEventChange={setSelectedEventId}
-              massScale={massScale}
-              onMassScaleChange={setMassScale}
-              distanceScale={distanceScale}
-              onDistanceScaleChange={setDistanceScale}
-            />
-          ) : (
-            <GravitationalWaveDataPanel
-              selectedEvent={selectedEvent}
-              massScale={massScale[0]}
-              distanceScale={distanceScale[0]}
-              compact
-            />
-          )}
+          {/* Tab bar */}
+          <div className="flex shrink-0 border-b border-white/10">
+            {(["controls", "physics"] as const).map((panel) => (
+              <button
+                key={panel}
+                onClick={() => setActivePanel(panel)}
+                className={`flex-1 py-2 text-xs font-medium capitalize transition-colors ${
+                  activePanel === panel
+                    ? "border-b border-emerald-400 text-emerald-400"
+                    : "text-white/40 hover:text-white/70"
+                }`}
+              >
+                {panel === "controls" ? "Controls" : "Physics"}
+              </button>
+            ))}
+          </div>
+
+          {/* Body */}
+          <div ref={scrollRef} className="flex-1 overflow-hidden">
+            {activePanel === "controls" ? (
+              <GravitationalWaveControls
+                selectedEventId={selectedEventId}
+                onEventChange={setSelectedEventId}
+                massScale={massScale}
+                onMassScaleChange={setMassScale}
+                distanceScale={distanceScale}
+                onDistanceScaleChange={setDistanceScale}
+              />
+            ) : (
+              <GravitationalWaveDataPanel
+                selectedEvent={selectedEvent}
+                massScale={massScale[0]}
+                distanceScale={distanceScale[0]}
+                compact
+              />
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
