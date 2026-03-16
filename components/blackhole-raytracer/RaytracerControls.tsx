@@ -9,7 +9,6 @@ export interface RaytracerParams {
   diskTemp: number
   diskDensity: number
   lensingStrength: number
-  perspective: number
   quality: number
 }
 
@@ -86,23 +85,6 @@ export function RaytracerControls({ params, onChange }: ControlsProps) {
         />
         <p className="text-xs text-muted-foreground">
           Strength of spacetime curvature (photon deflection)
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <Label>Camera Y Perspective</Label>
-          <Badge variant="outline">{params.perspective.toFixed(2)}</Badge>
-        </div>
-        <Slider
-          min={-1.0}
-          max={2.0}
-          step={0.05}
-          value={[params.perspective]}
-          onValueChange={([val]) => onChange({ perspective: val })}
-        />
-        <p className="text-xs text-muted-foreground">
-          Move camera up/down relative to the disk plane
         </p>
       </div>
 

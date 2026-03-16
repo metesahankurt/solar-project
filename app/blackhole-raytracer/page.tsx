@@ -12,8 +12,7 @@ const DEFAULT_PARAMS: RaytracerParams = {
   diskTemp: 1.5,
   diskDensity: 1.2,
   lensingStrength: 1.0,
-  perspective: 1.0,
-  quality: 2,
+  quality: 0.5,
 }
 
 export default function BlackHoleRaytracerPage() {
