@@ -45,7 +45,7 @@ export default function RootLayout({
               <SidebarInset>
                 <main className="relative flex min-h-svh w-full min-w-0 flex-1 flex-col overflow-hidden">
                   <NavTrigger />
-                  <div className="flex-1 min-h-0 overflow-auto">
+                  <div data-main-scroll className="flex-1 min-h-0 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {children}
                   </div>
                 </main>
